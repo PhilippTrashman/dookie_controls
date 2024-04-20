@@ -304,7 +304,6 @@ class _DookieClickerState extends State<DookieClicker> {
   Widget build(BuildContext context) {
     colorScheme = Theme.of(context).colorScheme;
     dookieNotifier = Provider.of<DookieNotifier>(context);
-    double dookieAmount = dookieNotifier.dookierStorage.dookieAmount;
     return Column(
       children: [
         Expanded(
