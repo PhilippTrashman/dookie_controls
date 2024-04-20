@@ -86,7 +86,6 @@ class _MyHomePageState extends State<MyHomePage> {
       onPressed: () {
         if (selectedUser != null) {
           dookieNotifier.selectUser(selectedUser!);
-          dookieNotifier.startTimer();
         }
       },
       icon: selectedUser != null
@@ -151,9 +150,16 @@ class _MainPageState extends State<MainPage> {
   User? selectedUser;
   List users = DookieNotifier.users;
   late DookieNotifier dookieNotifier;
+  bool timerStarted = false;
+
   var selectedPage = 0;
   @override
   Widget build(BuildContext context) {
+    dookieNotifier = Provider.of<DookieNotifier>(context);
+    if (!dookieNotifier.isTimerRunning && !timerStarted) {
+      dookieNotifier.startTimer();
+      timerStarted = true;
+    }
     Widget page;
     switch (selectedPage) {
       case 0:
@@ -179,7 +185,7 @@ class _MainPageState extends State<MainPage> {
         page = const Placeholder(text: 'Info');
     }
     colorScheme = Theme.of(context).colorScheme;
-    dookieNotifier = Provider.of<DookieNotifier>(context);
+
     return Stack(
       children: [
         Scaffold(
@@ -191,7 +197,6 @@ class _MainPageState extends State<MainPage> {
               leading: IconButton(
                 onPressed: () {
                   _scaffoldKey.currentState!.openDrawer();
-                  dookieNotifier.stopTimer();
                 },
                 icon: Icon(
                   Icons.menu,
@@ -317,7 +322,8 @@ class _DookieClickerState extends State<DookieClicker> {
                   },
                   child: const Text("Click"),
                 ),
-                Text("${dookieNotifier.dookierStorage.dookieAmount} Dookies"),
+                Text(
+                    "${dookieNotifier.dookierStorage.getDookieAmount()} Dookies"),
               ],
             )),
           ),
@@ -355,7 +361,7 @@ class _DookieClickerState extends State<DookieClicker> {
         }
       },
       child: Text(
-        "${upgrade.name}\n${upgrade.price} d's\n${upgrade.dookiesPerSecond} dpm\n${upgrade.amount} owned",
+        "${upgrade.name}\n${upgrade.priceString} d's\n${upgrade.dookiesPerSecond} dps\n${upgrade.amount} owned",
         textAlign: TextAlign.center,
       ),
     );

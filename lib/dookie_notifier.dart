@@ -1,14 +1,119 @@
 import 'package:flutter/material.dart';
 import 'package:dookie_controls/imports.dart';
 import 'dart:async';
-import 'dart:isolate';
+import 'dart:math';
+
+class IncrementToString {
+  String name;
+  num value;
+  String abbreviation;
+
+  IncrementToString(this.name, this.value, this.abbreviation);
+}
+
+final Map<int, IncrementToString> increments = generateIncrements();
+
+Map<int, IncrementToString> generateIncrements() {
+  final Map<int, IncrementToString> increments = {};
+  final List<String> names = [
+    "Thousand",
+    "Million",
+    "Billion",
+    "Trillion",
+    "Quadrillion",
+    "Quintillion",
+    "Sextillion",
+    "Septillion",
+    "Octillion",
+    "Nonillion",
+    "Decillion",
+    "Undecillion",
+    "Duodecillion",
+    "Tredecillion",
+    "Quattuordecillion",
+    "Quindecillion",
+    "Sexdecillion",
+    "Septendecillion",
+    "Octodecillion",
+    "Novemdecillion",
+    "Vigintillion",
+    "Unvigintillion",
+    "Duovigintillion",
+    "Tresvigintillion",
+    "Quattuorvigintillion",
+    "Quinquavigintillion",
+    "Sesvigintillion",
+    "Septemvigintillion",
+    "Octovigintillion",
+    "Novemvigintillion",
+    "Trigintillion",
+    "Untrigintillion",
+    "Duotrigintillion",
+    "Trestrigintillion",
+    "Quattuortrigintillion",
+    "Quinquatrigintillion",
+    "Sestrigintillion",
+    "Septentrigintillion",
+    "Octotrigintillion",
+    "Noventrigintillion",
+    "Quadragintillion"
+  ];
+  final List<String> abbreviations = [
+    "K",
+    "M",
+    "B",
+    "T",
+    "Qa",
+    "Qi",
+    "Sx",
+    "Sp",
+    "O",
+    "N",
+    "D",
+    "UD",
+    "DD",
+    "TD",
+    "QaD",
+    "QiD",
+    "SxD",
+    "SpD",
+    "OD",
+    "ND",
+    "V",
+    "UV",
+    "DV",
+    "TV",
+    "QaV",
+    "QiV",
+    "SxV",
+    "SpV",
+    "OV",
+    "NV",
+    "Tg",
+    "UTg",
+    "DTg",
+    "TTg",
+    "QaTg",
+    "QiTg",
+    "SxTg",
+    "SpTg",
+    "OTg",
+    "NTg",
+    "Qd"
+  ];
+  for (int i = 0; i < names.length; i++) {
+    increments[i + 1] =
+        IncrementToString(names[i], pow(1000, i + 1), abbreviations[i]);
+  }
+  return increments;
+}
 
 class DookieUpgrade {
   final String name;
   final double _price;
-  final int dookiesPerSecond;
+  final double dookiesPerSecond;
   int amount;
-  int amountGenerated;
+  double amountGenerated;
 
   DookieUpgrade(
       {required this.name,
@@ -25,8 +130,18 @@ class DookieUpgrade {
     return _price * (1.15 * amount);
   }
 
-  Future<void> generateDookies() async {
-    amountGenerated += amount * dookiesPerSecond;
+  String get priceString {
+    double price = this.price;
+    int increment = 0;
+    while (price >= 1000 && increment < increments.length) {
+      price /= 1000;
+      increment++;
+    }
+    return "${price.toStringAsFixed(2)} ${increments[increment]?.abbreviation ?? ""}";
+  }
+
+  double generateDookies() {
+    return dookiesPerSecond * amount;
   }
 }
 
@@ -36,24 +151,6 @@ class DookierStorage {
   double dookieMultiplier;
   List<DookieUpgrade> upgrades;
   int currentIncrement;
-  final Map<int, String> increments = {
-    1: "Thousands",
-    2: "Millions",
-    3: "Billions",
-    4: "Trillions",
-    5: "Quadrillions",
-    6: "Quintillions",
-    7: "Sextillions",
-    8: "Septillions",
-    9: "Octillions",
-    10: "Nonillions",
-    11: "Decillions",
-    12: "Undecillions",
-    13: "Duodecillions",
-    14: "Tredecillions",
-    15: "Quattuordecillions",
-    16: "Quindecillions",
-  };
 
   DookierStorage(
       {required this.dookieAmount,
@@ -69,10 +166,21 @@ class DookierStorage {
   void generateUpgradeDookies() {
     double amount = 0;
     for (DookieUpgrade upgrade in upgrades) {
-      upgrade.generateDookies();
-      amount += upgrade.amountGenerated;
+      amount += upgrade.generateDookies();
+      upgrade.amountGenerated += upgrade.generateDookies();
     }
     dookieAmount += amount;
+  }
+
+  String getDookieAmount() {
+    if (dookieAmount < 1000) {
+      return dookieAmount.toStringAsFixed(1);
+    }
+    while (dookieAmount >= 1000) {
+      dookieAmount /= 1000;
+      currentIncrement++;
+    }
+    return "${dookieAmount.toStringAsFixed(2)} ${increments[currentIncrement]?.abbreviation ?? ""}";
   }
 }
 
@@ -90,44 +198,45 @@ class DookieNotifier extends ChangeNotifier {
       upgrades: [
         DookieUpgrade(
             name: "Protein",
-            price: 10,
-            dookiesPerSecond: 1 * 60,
+            price: 100,
+            dookiesPerSecond: 1,
             amount: 0,
             amountGenerated: 0),
         DookieUpgrade(
             name: "Beer",
-            price: 50,
-            dookiesPerSecond: 3 * 60,
+            price: 1100,
+            dookiesPerSecond: 8,
             amount: 0,
             amountGenerated: 0),
         DookieUpgrade(
             name: "Xanax",
-            price: 100,
-            dookiesPerSecond: 5 * 60,
+            price: 12000,
+            dookiesPerSecond: 47,
             amount: 0,
             amountGenerated: 0),
         DookieUpgrade(
             name: "Benzos",
-            price: 200,
-            dookiesPerSecond: 10 * 60,
+            price: 1400000,
+            dookiesPerSecond: 1400,
             amount: 0,
             amountGenerated: 0),
         DookieUpgrade(
             name: "Benaudryl",
-            price: 250,
-            dookiesPerSecond: 13 * 60,
+            price: 20000000,
+            dookiesPerSecond: 7800,
             amount: 0,
             amountGenerated: 0),
         DookieUpgrade(
             name: "Fentanyl",
-            price: 300,
-            dookiesPerSecond: 15 * 60,
+            price: 330000000,
+            dookiesPerSecond: 44000,
             amount: 0,
             amountGenerated: 0),
       ],
       currentIncrement: 0);
 
   Timer? _dookieTimer;
+  bool isTimerRunning = false;
 
   DookieNotifier() {
     dookierStorage.dookieAmount = dookieAmount;
@@ -148,16 +257,18 @@ class DookieNotifier extends ChangeNotifier {
   void startTimer() {
     _dookieTimer?.cancel();
     debugPrint('Timer started');
-    _dookieTimer = Timer.periodic(const Duration(seconds: 60), (timer) async {
+    isTimerRunning = true;
+    _dookieTimer = Timer.periodic(const Duration(seconds: 1), (timer) async {
       dookierStorage.generateUpgradeDookies();
-      debugPrint('${dookierStorage.dookieAmount}');
       notifyListeners();
     });
   }
 
   void stopTimer() {
+    debugPrint('Timer stopped');
     _dookieTimer?.cancel();
     _dookieTimer = null;
+    isTimerRunning = false;
   }
 
   void selectUser(User? user) {
