@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:dookie_controls/imports.dart';
 import 'dart:async';
+import 'dart:isolate';
 
 class DookieUpgrade {
   final String name;
@@ -24,7 +25,7 @@ class DookieUpgrade {
     return _price * (1.15 * amount);
   }
 
-  void generateDookies() {
+  Future<void> generateDookies() async {
     amountGenerated += amount * dookiesPerSecond;
   }
 }
@@ -53,7 +54,6 @@ class DookierStorage {
     15: "Quattuordecillions",
     16: "Quindecillions",
   };
-  Timer? _dookieTimer;
 
   DookierStorage(
       {required this.dookieAmount,
@@ -62,15 +62,17 @@ class DookierStorage {
       required this.upgrades,
       required this.currentIncrement});
 
-  void _startTimer() {
-    _dookieTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      dookieAmount += dookiesPerSecond;
-    });
+  void incrementDookieAmount() {
+    dookieAmount += 1 * dookieMultiplier;
   }
 
-  void _stopTimer() {
-    _dookieTimer?.cancel();
-    _dookieTimer = null;
+  void generateUpgradeDookies() {
+    double amount = 0;
+    for (DookieUpgrade upgrade in upgrades) {
+      upgrade.generateDookies();
+      amount += upgrade.amountGenerated;
+    }
+    dookieAmount += amount;
   }
 }
 
@@ -80,47 +82,57 @@ class DookieNotifier extends ChangeNotifier {
   double dookieAmount = 0;
   double dookieMultiplier = 1;
   double dookiesPerSecond = 0;
-  DookierStorage? dookierStorage;
+
+  DookierStorage dookierStorage = DookierStorage(
+      dookieAmount: 0,
+      dookiesPerSecond: 0,
+      dookieMultiplier: 0,
+      upgrades: [
+        DookieUpgrade(
+            name: "Protein",
+            price: 10,
+            dookiesPerSecond: 1 * 60,
+            amount: 0,
+            amountGenerated: 0),
+        DookieUpgrade(
+            name: "Beer",
+            price: 50,
+            dookiesPerSecond: 3 * 60,
+            amount: 0,
+            amountGenerated: 0),
+        DookieUpgrade(
+            name: "Xanax",
+            price: 100,
+            dookiesPerSecond: 5 * 60,
+            amount: 0,
+            amountGenerated: 0),
+        DookieUpgrade(
+            name: "Benzos",
+            price: 200,
+            dookiesPerSecond: 10 * 60,
+            amount: 0,
+            amountGenerated: 0),
+        DookieUpgrade(
+            name: "Benaudryl",
+            price: 250,
+            dookiesPerSecond: 13 * 60,
+            amount: 0,
+            amountGenerated: 0),
+        DookieUpgrade(
+            name: "Fentanyl",
+            price: 300,
+            dookiesPerSecond: 15 * 60,
+            amount: 0,
+            amountGenerated: 0),
+      ],
+      currentIncrement: 0);
+
+  Timer? _dookieTimer;
 
   DookieNotifier() {
-    dookierStorage = DookierStorage(
-        dookieAmount: dookieAmount,
-        dookiesPerSecond: dookiesPerSecond,
-        dookieMultiplier: dookieMultiplier,
-        upgrades: [
-          DookieUpgrade(
-              name: "Upgrade 1",
-              price: 10,
-              dookiesPerSecond: 1,
-              amount: 0,
-              amountGenerated: 0),
-          DookieUpgrade(
-              name: "Upgrade 2",
-              price: 100,
-              dookiesPerSecond: 10,
-              amount: 0,
-              amountGenerated: 0),
-          DookieUpgrade(
-              name: "Upgrade 3",
-              price: 1000,
-              dookiesPerSecond: 100,
-              amount: 0,
-              amountGenerated: 0),
-          DookieUpgrade(
-              name: "Upgrade 4",
-              price: 10000,
-              dookiesPerSecond: 1000,
-              amount: 0,
-              amountGenerated: 0),
-          DookieUpgrade(
-              name: "Upgrade 5",
-              price: 100000,
-              dookiesPerSecond: 10000,
-              amount: 0,
-              amountGenerated: 0),
-        ],
-        currentIncrement: 0);
-    dookierStorage!._startTimer();
+    dookierStorage.dookieAmount = dookieAmount;
+    dookierStorage.dookiesPerSecond = dookiesPerSecond;
+    dookierStorage.dookieMultiplier = dookieMultiplier;
   }
 
   static CarBrand carBrand = CarBrand("Toyota", "toyota_logo.png");
@@ -131,6 +143,21 @@ class DookieNotifier extends ChangeNotifier {
   ];
   void init(BuildContext context) {
     colorScheme = Theme.of(context).colorScheme;
+  }
+
+  void startTimer() {
+    _dookieTimer?.cancel();
+    debugPrint('Timer started');
+    _dookieTimer = Timer.periodic(const Duration(seconds: 60), (timer) async {
+      dookierStorage.generateUpgradeDookies();
+      debugPrint('${dookierStorage.dookieAmount}');
+      notifyListeners();
+    });
+  }
+
+  void stopTimer() {
+    _dookieTimer?.cancel();
+    _dookieTimer = null;
   }
 
   void selectUser(User? user) {

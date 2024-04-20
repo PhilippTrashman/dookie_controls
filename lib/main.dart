@@ -86,6 +86,7 @@ class _MyHomePageState extends State<MyHomePage> {
       onPressed: () {
         if (selectedUser != null) {
           dookieNotifier.selectUser(selectedUser!);
+          dookieNotifier.startTimer();
         }
       },
       icon: selectedUser != null
@@ -190,6 +191,7 @@ class _MainPageState extends State<MainPage> {
               leading: IconButton(
                 onPressed: () {
                   _scaffoldKey.currentState!.openDrawer();
+                  dookieNotifier.stopTimer();
                 },
                 icon: Icon(
                   Icons.menu,
@@ -297,6 +299,7 @@ class _DookieClickerState extends State<DookieClicker> {
   Widget build(BuildContext context) {
     colorScheme = Theme.of(context).colorScheme;
     dookieNotifier = Provider.of<DookieNotifier>(context);
+    double dookieAmount = dookieNotifier.dookierStorage.dookieAmount;
     return Column(
       children: [
         Expanded(
@@ -309,13 +312,12 @@ class _DookieClickerState extends State<DookieClicker> {
                 ElevatedButton(
                   onPressed: () {
                     setState(() {
-                      dookieNotifier.dookieAmount +=
-                          1 * dookieNotifier.dookieMultiplier;
+                      dookieNotifier.dookierStorage.dookieAmount += 1;
                     });
                   },
                   child: const Text("Click"),
                 ),
-                Text("${dookieNotifier.dookieAmount.toInt()} dookies"),
+                Text("${dookieNotifier.dookierStorage.dookieAmount} Dookies"),
               ],
             )),
           ),
@@ -327,21 +329,12 @@ class _DookieClickerState extends State<DookieClicker> {
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 3,
             ),
-            itemCount: 3,
+            itemCount: dookieNotifier.dookierStorage.upgrades.length,
             itemBuilder: (BuildContext context, int index) {
-              switch (index) {
-                case 0:
-                  return upgradeButton(
-                      name: "Upgrade 1", cost: 10, multiplier: 2);
-                case 1:
-                  return upgradeButton(
-                      name: "Upgrade 2", cost: 100, multiplier: 5);
-                case 2:
-                  return upgradeButton(
-                      name: "Upgrade 3", cost: 1000, multiplier: 10);
-                default:
-                  return const Text("Error");
-              }
+              return upgradeButton(
+                upgrade: dookieNotifier.dookierStorage.upgrades[index],
+                dookieNotifier: dookieNotifier,
+              );
             },
           )),
         )
@@ -350,19 +343,21 @@ class _DookieClickerState extends State<DookieClicker> {
   }
 
   Widget upgradeButton(
-      {required String name,
-      required double cost,
-      required double multiplier}) {
+      {required DookieUpgrade upgrade,
+      required DookieNotifier dookieNotifier}) {
     return ElevatedButton(
       onPressed: () {
-        if (dookieNotifier.dookieAmount >= cost) {
+        if (dookieNotifier.dookierStorage.dookieAmount >= upgrade.price) {
           setState(() {
-            dookieNotifier.dookieAmount -= cost;
-            dookieNotifier.dookieMultiplier += multiplier;
+            dookieNotifier.dookierStorage.dookieAmount -= upgrade.price;
+            upgrade.amount++;
           });
         }
       },
-      child: Text("$name\nCost: $cost\nMultiplier: $multiplier"),
+      child: Text(
+        "${upgrade.name}\n${upgrade.price} d's\n${upgrade.dookiesPerSecond} dpm\n${upgrade.amount} owned",
+        textAlign: TextAlign.center,
+      ),
     );
   }
 }
