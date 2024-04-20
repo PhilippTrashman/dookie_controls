@@ -1,16 +1,13 @@
 # dookie_controls
 
-A new Flutter project.
+Control Component for the ShitBox3000
 
-## Getting Started
+## Ideas
+- Different App Designs based on Car Brand
+- Car Brand Gimmicks
+    - __Volkswagen__: Ad breaks when changing pages and Ad Banners on Dookie Clicker
+    - __BMW__: Check Engine Light always on and cant use the Turn Signals
+    - __Mercedes__: Wont log in but gives a push notification telling to buy it, then forwards to a YouTube video or something
+    - __Random Chinese Brand__: Shitbox but in Chinese, receives 1 sec Input Lag, most buttons dont work
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- Dookie Clicker, a knock-off cookie clicker  
