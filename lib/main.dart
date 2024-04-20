@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:dookie_controls/color_schemes/color_schemes.g.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,12 +14,32 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
+        colorScheme: darkColorScheme,
       ),
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
+}
+
+class CarBrand {
+  final String name;
+  final String logo;
+
+  CarBrand(this.name, this.logo);
+
+}
+
+class User {
+  final String name;
+  final String lastName;
+  final CarBrand carBrand;
+
+  User({
+    required this.name,
+    required this.lastName,
+    required this.carBrand}
+  );
 }
 
 class MyHomePage extends StatefulWidget {
@@ -27,19 +47,16 @@ class MyHomePage extends StatefulWidget {
 
   final String title;
 
+
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
+  static CarBrand carBrand = CarBrand("Toyota", "toyota_logo.png");
+  static List users = [
+    User(name: "John", lastName: "Doe", carBrand: carBrand)
+  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,24 +65,35 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+          child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Expanded(
+            flex: 2,
+            child: ignitionLock()
+          )
+          Expanded(
+            flex: 1,
+            child: GridView.builder(
+              gridDelegate: gridDelegate, 
+              itemBuilder: itemBuilder),
+            
+          )
+        ],
+      )),
     );
+  }
+
+  Widget ignitionLock() {
+    return IconButton(
+      onPressed: () {
+        print("Button pressed");
+      },
+      icon: const Icon(Icons.key),
+    );
+  }
+
+  Widget ignitionKey() {
+
   }
 }
