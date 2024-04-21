@@ -3,6 +3,20 @@ class CarBrand {
   final String logo;
 
   CarBrand(this.name, this.logo);
+
+  Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      'logo': logo,
+    };
+  }
+
+  factory CarBrand.fromJson(Map<String, dynamic> json) {
+    return CarBrand(
+      json['name'],
+      json['logo'],
+    );
+  }
 }
 
 final Map<int, CarBrand> carBrands = {

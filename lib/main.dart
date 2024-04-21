@@ -3,9 +3,10 @@ import 'dart:math';
 import 'package:dookie_controls/color_schemes/color_schemes.g.dart';
 import 'package:dookie_controls/imports.dart';
 import 'package:dookie_controls/dookie_notifier.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
-import 'package:dookie_controls/ads.dart';
+import 'package:dookie_controls/dookie_clicker.dart';
 
 void main() {
   runApp(const MyApp());
@@ -42,7 +43,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   late ColorScheme colorScheme;
   User? selectedUser;
-  List users = DookieNotifier.users;
+  List users = [];
   late DookieNotifier dookieNotifier;
   @override
   Widget build(BuildContext context) {
@@ -72,37 +73,192 @@ class _MyHomePageState extends State<MyHomePage> {
             child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Expanded(child: Container(child: ignitionLock())),
+            Expanded(flex: 2, child: Container(child: ignitionLock())),
+            Text(
+              dookieNotifier.users.isEmpty ? "" : "Select a user",
+              style: TextStyle(color: colorScheme.onPrimaryContainer),
+            ),
             Expanded(
+                flex: 4,
                 child: GridView.builder(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-              ),
-              itemCount: users.length,
-              itemBuilder: (BuildContext context, int index) {
-                return ignitionKey(user: users[index]);
-              },
-            )),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                  ),
+                  itemCount: dookieNotifier.users.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    if (dookieNotifier.users.isEmpty) {
+                      return const SizedBox();
+                    }
+                    return ignitionKey(user: dookieNotifier.users[index]!);
+                  },
+                )),
+            Expanded(
+              child: Container(
+                  color: colorScheme.secondaryContainer,
+                  child: Center(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        nameController.clear();
+                        lastNameController.clear();
+                        selectedCarBrand = null;
+                        addUserWindow();
+                      },
+                      child: Icon(
+                        Icons.add,
+                        color: colorScheme.onSecondaryContainer,
+                      ),
+                    ),
+                  )),
+            )
           ],
         )));
   }
 
-  Widget ignitionLock() {
-    return IconButton(
-      onPressed: () {
-        if (selectedUser != null) {
-          dookieNotifier.selectUser(selectedUser!);
-        }
-      },
-      icon: selectedUser != null
-          ? Icon(
-              Icons.lock_open,
-              color: colorScheme.onPrimaryContainer,
-            )
-          : Icon(
-              Icons.lock,
-              color: colorScheme.onPrimaryContainer,
+  TextEditingController nameController = TextEditingController();
+  TextEditingController lastNameController = TextEditingController();
+  CarBrand? selectedCarBrand;
+  CarBrand? selectedCarBrand2;
+
+  List<DropdownMenuEntry<CarBrand>> getCarBrands() {
+    List<DropdownMenuEntry<CarBrand>> result = [];
+    for (var carBrand in carBrands.values) {
+      result.add(DropdownMenuEntry(
+        value: carBrand,
+        label: carBrand.name,
+      ));
+    }
+    return result;
+  }
+
+  void addUserWindow() {
+    showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (BuildContext context) {
+          return PopScope(
+            canPop: false,
+            child: AlertDialog(
+              title: const Text('Add User'),
+              content: Container(
+                child: Column(
+                  children: [
+                    TextField(
+                      decoration: const InputDecoration(labelText: 'Name'),
+                      controller: nameController,
+                    ),
+                    TextField(
+                      decoration: const InputDecoration(labelText: 'Last Name'),
+                      controller: lastNameController,
+                    ),
+                    Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: DropdownMenu(
+                          label: const Text('Car Brand'),
+                          dropdownMenuEntries: getCarBrands(),
+                          expandedInsets:
+                              const EdgeInsets.symmetric(vertical: 5.0),
+                          onSelected: (value) {
+                            setState(() {
+                              selectedCarBrand = value;
+                            });
+                          },
+                        )),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('Cancel')),
+                TextButton(
+                    onPressed: () {
+                      if (nameController.text.isEmpty ||
+                          lastNameController.text.isEmpty ||
+                          selectedCarBrand == null) {
+                        return;
+                      }
+                      dookieNotifier.addUser(
+                          name: nameController.text,
+                          lastName: lastNameController.text,
+                          carBrand: selectedCarBrand!);
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('Add User')),
+              ],
             ),
+          );
+        });
+  }
+
+  void login() {
+    if (selectedUser != null) {
+      if (selectedUser!.carBrand.name == '狗屎盒') {
+        int randomNumber = Random().nextInt(10);
+        int randomNumber2 = Random().nextInt(10);
+        if (randomNumber == randomNumber2) {
+          dookieNotifier.selectUser(selectedUser!);
+          selectedUser = null;
+          ScaffoldMessenger.of(context)
+            ..hideCurrentSnackBar()
+            ..showSnackBar(
+              const SnackBar(
+                content: Text('User Selected'),
+              ),
+            );
+        } else {
+          ScaffoldMessenger.of(context)
+            ..hideCurrentSnackBar()
+            ..showSnackBar(
+              const SnackBar(
+                content: Text('Engine Stalled'),
+              ),
+            );
+        }
+      } else {
+        dookieNotifier.selectUser(selectedUser!);
+        selectedUser = null;
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(
+            const SnackBar(
+              content: Text('User Selected'),
+            ),
+          );
+      }
+    }
+  }
+
+  Widget ignitionLock() {
+    return Column(
+      children: [
+        Expanded(
+          child: ElevatedButton(
+            style: ButtonStyle(
+              backgroundColor:
+                  MaterialStateProperty.all<Color>(Colors.transparent),
+            ),
+            onPressed: login,
+            child: selectedUser != null
+                ? Icon(
+                    Icons.lock_open,
+                    color: colorScheme.onPrimaryContainer,
+                  )
+                : Icon(
+                    Icons.lock,
+                    color: colorScheme.onPrimaryContainer,
+                  ),
+          ),
+        ),
+        if (selectedUser != null)
+          Expanded(
+            child: SvgPicture.asset(
+              selectedUser!.carBrand.logo,
+              fit: BoxFit.contain,
+            ),
+          ),
+      ],
     );
   }
 
@@ -135,7 +291,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             Expanded(
               child: SvgPicture.asset(
-                'assets/brands/bmw.svg',
+                user.carBrand.logo,
                 fit: BoxFit.contain,
               ),
             ),
@@ -158,7 +314,7 @@ class _MainPageState extends State<MainPage> {
 
   late ColorScheme colorScheme;
   User? selectedUser;
-  List users = DookieNotifier.users;
+  List users = [];
   late DookieNotifier dookieNotifier;
   bool timerStarted = false;
 
@@ -216,6 +372,17 @@ class _MainPageState extends State<MainPage> {
                   color: colorScheme.primary,
                 ),
               ),
+              actions: [
+                IconButton(
+                  onPressed: () {
+                    dookieNotifier.logout();
+                  },
+                  icon: Icon(
+                    Icons.logout,
+                    color: colorScheme.primary,
+                  ),
+                ),
+              ],
             ),
             body: page),
       ],
@@ -304,148 +471,5 @@ class Placeholder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(child: Text(text));
-  }
-}
-
-class DookieClicker extends StatefulWidget {
-  const DookieClicker({super.key});
-
-  @override
-  State<DookieClicker> createState() => _DookieClickerState();
-}
-
-class _DookieClickerState extends State<DookieClicker> {
-  late ColorScheme colorScheme;
-  late DookieNotifier dookieNotifier;
-  bool adsEnabled = true;
-
-  int ad1 = Random().nextInt(Ads.verticalAds.length);
-  int ad2 = Random().nextInt(Ads.verticalAds.length);
-  int ad3 = Random().nextInt(Ads.verticalAds.length);
-  int ad4 = Random().nextInt(Ads.verticalAds.length);
-  int ad5 = Random().nextInt(Ads.verticalAds.length);
-  int ad6 = Random().nextInt(Ads.verticalAds.length);
-
-  int horizontalAd1 = Random().nextInt(Ads.horizontalAds.length);
-  int horizontalAd2 = Random().nextInt(Ads.horizontalAds.length);
-
-  @override
-  Widget build(BuildContext context) {
-    colorScheme = Theme.of(context).colorScheme;
-    dookieNotifier = Provider.of<DookieNotifier>(context);
-    return adsEnabled ? adView() : clickerView();
-  }
-
-  Row adView() {
-    return Row(
-      children: [
-        Expanded(
-          flex: 1,
-          child: Column(
-            children: [
-              Ads(verticalAd: true, adIndex: ad1),
-              Ads(verticalAd: true, adIndex: ad2),
-              Ads(verticalAd: true, adIndex: ad3),
-            ],
-          ),
-        ),
-        Expanded(
-          flex: 3,
-          child: Column(
-            children: [
-              Ads(verticalAd: false, adIndex: horizontalAd1),
-              Expanded(child: clickerView()),
-              Ads(verticalAd: false, adIndex: horizontalAd2),
-            ],
-          ),
-        ),
-        Expanded(
-          flex: 1,
-          child: Column(
-            children: [
-              Ads(verticalAd: true, adIndex: ad4),
-              Ads(verticalAd: true, adIndex: ad5),
-              Ads(verticalAd: true, adIndex: ad6),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Column clickerView() {
-    return Column(
-      children: [
-        Expanded(
-          flex: 1,
-          child: Center(
-            child: Container(
-                child: Column(
-              children: [
-                const Text("Dookie Clicker"),
-                ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        dookieNotifier.dookierStorage.dookieAmount += 1;
-                      });
-                    },
-                    child: Icon(
-                      Icons.emoji_emotions_outlined,
-                      color: colorScheme.onPrimaryContainer,
-                    )),
-                Text(
-                    "${dookieNotifier.dookierStorage.getDookieAmount()} Dookies"),
-              ],
-            )),
-          ),
-        ),
-        Expanded(
-          flex: 3,
-          child: Center(
-              child: GridView.builder(
-            shrinkWrap: true,
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: adsEnabled ? 2 : 3,
-            ),
-            itemCount: dookieNotifier.dookierStorage.upgrades.length,
-            itemBuilder: (BuildContext context, int index) {
-              return upgradeButton(
-                upgrade: dookieNotifier.dookierStorage.upgrades[index],
-                dookieNotifier: dookieNotifier,
-              );
-            },
-          )),
-        )
-      ],
-    );
-  }
-
-  Widget upgradeButton(
-      {required DookieUpgrade upgrade,
-      required DookieNotifier dookieNotifier}) {
-    return Padding(
-      padding: const EdgeInsets.all(2.0),
-      child: ElevatedButton(
-        onPressed: () {
-          if (dookieNotifier.dookierStorage.dookieAmount >= upgrade.price) {
-            setState(() {
-              dookieNotifier.dookierStorage.dookieAmount -= upgrade.price;
-              upgrade.amount++;
-            });
-          }
-        },
-        style: ButtonStyle(
-          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-            RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15),
-            ),
-          ),
-        ),
-        child: Text(
-          "${upgrade.name}\n${upgrade.priceString} d's\n${upgrade.amount} owned",
-          textAlign: TextAlign.center,
-        ),
-      ),
-    );
   }
 }
