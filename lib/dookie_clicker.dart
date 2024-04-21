@@ -40,12 +40,14 @@ class _DookieClickerState extends State<DookieClicker> {
       children: [
         Expanded(
           flex: 1,
-          child: Column(
-            children: [
-              Ads(verticalAd: true, adIndex: ad1),
-              Ads(verticalAd: true, adIndex: ad2),
-              Ads(verticalAd: true, adIndex: ad3),
-            ],
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                Ads(verticalAd: true, adIndex: ad1),
+                Ads(verticalAd: true, adIndex: ad2),
+                Ads(verticalAd: true, adIndex: ad3),
+              ],
+            ),
           ),
         ),
         Expanded(
@@ -60,12 +62,14 @@ class _DookieClickerState extends State<DookieClicker> {
         ),
         Expanded(
           flex: 1,
-          child: Column(
-            children: [
-              Ads(verticalAd: true, adIndex: ad4),
-              Ads(verticalAd: true, adIndex: ad5),
-              Ads(verticalAd: true, adIndex: ad6),
-            ],
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                Ads(verticalAd: true, adIndex: ad4),
+                Ads(verticalAd: true, adIndex: ad5),
+                Ads(verticalAd: true, adIndex: ad6),
+              ],
+            ),
           ),
         ),
       ],
@@ -133,7 +137,7 @@ class _DookieClickerState extends State<DookieClicker> {
   }
 
   Widget upgradeButton(
-      {required DookieUpgrade upgrade,
+      {required DookieUpgradeConnection upgrade,
       required DookieNotifier dookieNotifier}) {
     return Padding(
       padding: const EdgeInsets.all(2.0),
@@ -158,7 +162,7 @@ class _DookieClickerState extends State<DookieClicker> {
           ),
         ),
         child: Text(
-          "${upgrade.name}\n${upgrade.priceString} d's\n${upgrade.amount} owned",
+          "${upgrade.upgrade.name}\n${upgrade.priceString} d's\n${upgrade.amount} owned",
           textAlign: TextAlign.center,
         ),
       ),

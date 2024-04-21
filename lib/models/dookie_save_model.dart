@@ -106,29 +106,74 @@ Map<int, IncrementToString> generateIncrements() {
 }
 
 class DookieUpgrade {
+  final int id;
   final String name;
   final double _price;
   final double dookiesPerSecond;
-  int amount;
+
+  DookieUpgrade({
+    required this.id,
+    required this.name,
+    required double price,
+    required this.dookiesPerSecond,
+  }) : _price = price;
+
+  double get price {
+    return _price;
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'price': _price,
+      'dookiesPerSecond': dookiesPerSecond,
+    };
+  }
+
+  factory DookieUpgrade.fromJson(Map<String, dynamic> json) {
+    return DookieUpgrade(
+      id: json['id'],
+      name: json['name'],
+      price: json['price'],
+      dookiesPerSecond: json['dookiesPerSecond'],
+    );
+  }
+}
+
+Map<int, DookieUpgrade> dookieUpgrades = {
+  1: DookieUpgrade(id: 1, name: "Protein", price: 100, dookiesPerSecond: 1),
+  2: DookieUpgrade(id: 2, name: "Beer", price: 1100, dookiesPerSecond: 8),
+  3: DookieUpgrade(id: 3, name: "Xanax", price: 12000, dookiesPerSecond: 47),
+  4: DookieUpgrade(
+      id: 4, name: "Benzos", price: 1400000, dookiesPerSecond: 1400),
+  5: DookieUpgrade(
+      id: 5, name: "Benaudryl", price: 20000000, dookiesPerSecond: 7800),
+  6: DookieUpgrade(
+      id: 6, name: "Fentanyl", price: 330000000, dookiesPerSecond: 44000)
+};
+
+class DookieUpgradeConnection {
+  final DookieUpgrade upgrade;
+  final int saveId;
+  double amount;
   double amountGenerated;
 
-  DookieUpgrade(
-      {required this.name,
-      required double price,
-      required this.dookiesPerSecond,
+  DookieUpgradeConnection(
+      {required this.upgrade,
+      required this.saveId,
       required this.amount,
-      required this.amountGenerated})
-      : _price = price;
+      required this.amountGenerated});
 
   double get price {
     if (amount == 0) {
-      return _price;
+      return upgrade.price;
     }
-    return _price * (1.15 * amount);
+    return upgrade.price * (1.15 * amount);
   }
 
   String get priceString {
-    double price = this.price;
+    double price = upgrade.price;
     int increment = 0;
     while (price >= 1000 && increment < increments.length) {
       price /= 1000;
@@ -138,24 +183,22 @@ class DookieUpgrade {
   }
 
   double generateDookies() {
-    return dookiesPerSecond * amount;
+    return upgrade.dookiesPerSecond * amount;
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'name': name,
-      'price': _price,
-      'dookiesPerSecond': dookiesPerSecond,
+      'upgrade_id': upgrade.id,
+      'saveId': saveId,
       'amount': amount,
       'amountGenerated': amountGenerated,
     };
   }
 
-  factory DookieUpgrade.fromJson(Map<String, dynamic> json) {
-    return DookieUpgrade(
-      name: json['name'],
-      price: json['price'],
-      dookiesPerSecond: json['dookiesPerSecond'],
+  factory DookieUpgradeConnection.fromJson(Map<String, dynamic> json) {
+    return DookieUpgradeConnection(
+      upgrade: dookieUpgrades[int.parse(json['upgrade_id'])]!,
+      saveId: json['saveId'],
       amount: json['amount'],
       amountGenerated: json['amountGenerated'],
     );
@@ -163,14 +206,16 @@ class DookieUpgrade {
 }
 
 class DookieSave {
+  int id;
   double dookieAmount;
   double dookiesPerSecond;
   double dookieMultiplier;
-  List<DookieUpgrade> upgrades;
+  List<DookieUpgradeConnection> upgrades;
   int currentIncrement;
 
   DookieSave(
-      {required this.dookieAmount,
+      {required this.id,
+      required this.dookieAmount,
       required this.dookiesPerSecond,
       required this.dookieMultiplier,
       required this.upgrades,
@@ -182,7 +227,7 @@ class DookieSave {
 
   void generateUpgradeDookies() {
     double amount = 0;
-    for (DookieUpgrade upgrade in upgrades) {
+    for (DookieUpgradeConnection upgrade in upgrades) {
       amount += upgrade.generateDookies();
       upgrade.amountGenerated += upgrade.generateDookies();
     }
@@ -212,11 +257,12 @@ class DookieSave {
 
   factory DookieSave.fromJson(Map<String, dynamic> json) {
     return DookieSave(
+      id: json['id'],
       dookieAmount: json['dookieAmount'],
       dookiesPerSecond: json['dookiesPerSecond'],
       dookieMultiplier: json['dookieMultiplier'],
-      upgrades: List<DookieUpgrade>.from(
-          json['upgrades'].map((e) => DookieUpgrade.fromJson(e))),
+      upgrades: List<DookieUpgradeConnection>.from(
+          json['upgrades'].map((e) => DookieUpgradeConnection.fromJson(e))),
       currentIncrement: json['currentIncrement'],
     );
   }

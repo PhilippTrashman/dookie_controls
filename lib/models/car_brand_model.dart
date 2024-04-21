@@ -1,11 +1,13 @@
 class CarBrand {
+  final int id;
   final String name;
   final String logo;
 
-  CarBrand(this.name, this.logo);
+  CarBrand(this.id, this.name, this.logo);
 
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'name': name,
       'logo': logo,
     };
@@ -13,6 +15,7 @@ class CarBrand {
 
   factory CarBrand.fromJson(Map<String, dynamic> json) {
     return CarBrand(
+      json['id'],
       json['name'],
       json['logo'],
     );
@@ -20,9 +23,9 @@ class CarBrand {
 }
 
 final Map<int, CarBrand> carBrands = {
-  1: CarBrand('Volkswagen', 'assets/brands/vw.svg'),
-  2: CarBrand('BMW', 'assets/brands/bmw.svg'),
-  3: CarBrand('Mercedes-Benz', 'assets/brands/mercedes.svg'),
-  4: CarBrand('Lada', 'assets/brands/lada.svg'),
-  5: CarBrand('狗屎盒', 'assets/brands/gou_shi_he.svg')
+  1: CarBrand(1, 'Volkswagen', 'assets/brands/vw.svg'),
+  2: CarBrand(2, 'BMW', 'assets/brands/bmw.svg'),
+  3: CarBrand(3, 'Mercedes-Benz', 'assets/brands/mercedes.svg'),
+  4: CarBrand(4, 'Lada', 'assets/brands/lada.svg'),
+  5: CarBrand(5, '狗屎盒', 'assets/brands/gou_shi_he.svg')
 };

@@ -15,6 +15,16 @@ class User {
       required this.carBrand,
       required this.dookieSave});
 
+  Map<String, dynamic> toDbMap() {
+    return {
+      'id': id,
+      'name': name,
+      'last_name': lastName,
+      'car_brand_id': carBrand.id,
+      'dookie_save_id': dookieSave.id,
+    };
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,

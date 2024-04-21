@@ -4,55 +4,53 @@ import 'package:dookie_controls/database.dart';
 import 'dart:async';
 import 'dart:math';
 
-DookieSave dookieBaseSave = DookieSave(
-    dookieAmount: 0,
-    dookiesPerSecond: 0,
-    dookieMultiplier: 1,
-    upgrades: [
-      DookieUpgrade(
-          name: "Protein",
-          price: 100,
-          dookiesPerSecond: 1,
-          amount: 0,
-          amountGenerated: 0),
-      DookieUpgrade(
-          name: "Beer",
-          price: 1100,
-          dookiesPerSecond: 8,
-          amount: 0,
-          amountGenerated: 0),
-      DookieUpgrade(
-          name: "Xanax",
-          price: 12000,
-          dookiesPerSecond: 47,
-          amount: 0,
-          amountGenerated: 0),
-      DookieUpgrade(
-          name: "Benzos",
-          price: 1400000,
-          dookiesPerSecond: 1400,
-          amount: 0,
-          amountGenerated: 0),
-      DookieUpgrade(
-          name: "Benaudryl",
-          price: 20000000,
-          dookiesPerSecond: 7800,
-          amount: 0,
-          amountGenerated: 0),
-      DookieUpgrade(
-          name: "Fentanyl",
-          price: 330000000,
-          dookiesPerSecond: 44000,
-          amount: 0,
-          amountGenerated: 0),
-    ],
-    currentIncrement: 0);
+DookieSave dookieBaseSave(int userId) {
+  return DookieSave(
+      id: userId,
+      dookieAmount: 0,
+      dookiesPerSecond: 0,
+      dookieMultiplier: 1,
+      upgrades: [
+        DookieUpgradeConnection(
+            upgrade: dookieUpgrades[1]!,
+            saveId: userId,
+            amount: 0,
+            amountGenerated: 0),
+        DookieUpgradeConnection(
+            upgrade: dookieUpgrades[2]!,
+            saveId: userId,
+            amount: 0,
+            amountGenerated: 0),
+        DookieUpgradeConnection(
+            upgrade: dookieUpgrades[3]!,
+            saveId: userId,
+            amount: 0,
+            amountGenerated: 0),
+        DookieUpgradeConnection(
+            upgrade: dookieUpgrades[4]!,
+            saveId: userId,
+            amount: 0,
+            amountGenerated: 0),
+        DookieUpgradeConnection(
+            upgrade: dookieUpgrades[5]!,
+            saveId: userId,
+            amount: 0,
+            amountGenerated: 0),
+        DookieUpgradeConnection(
+            upgrade: dookieUpgrades[6]!,
+            saveId: userId,
+            amount: 0,
+            amountGenerated: 0),
+      ],
+      currentIncrement: 0);
+}
 
 class DookieNotifier extends ChangeNotifier {
   late ColorScheme colorScheme;
   User? selectedUser;
 
   Timer? _dookieTimer;
+  Timer? _autoSaveTimer;
   bool isTimerRunning = false;
   Map<int, User> users = {};
 
@@ -81,17 +79,25 @@ class DookieNotifier extends ChangeNotifier {
   void startTimer() {
     _dookieTimer?.cancel();
     debugPrint('Timer started');
-    isTimerRunning = true;
-    _dookieTimer = Timer.periodic(const Duration(seconds: 1), (timer) async {
-      dookieBaseSave.generateUpgradeDookies();
-      notifyListeners();
-    });
+    if (selectedUser != null) {
+      isTimerRunning = true;
+      _dookieTimer = Timer.periodic(const Duration(seconds: 1), (timer) async {
+        selectedUser!.dookieSave.generateUpgradeDookies();
+        notifyListeners();
+      });
+      _autoSaveTimer =
+          Timer.periodic(const Duration(seconds: 60), (timer) async {
+        await saveUser();
+      });
+    }
   }
 
   void stopTimer() {
     debugPrint('Timer stopped');
     _dookieTimer?.cancel();
+    _autoSaveTimer?.cancel();
     _dookieTimer = null;
+    _autoSaveTimer = null;
     isTimerRunning = false;
   }
 
@@ -110,21 +116,23 @@ class DookieNotifier extends ChangeNotifier {
       {required String name,
       required String lastName,
       required CarBrand carBrand}) {
+    late int userId;
     if (users.isEmpty) {
-      users[0] = User(
-          id: 0,
-          name: name,
-          lastName: lastName,
-          carBrand: carBrand,
-          dookieSave: dookieBaseSave);
+      userId = 0;
     } else {
-      users[users.keys.reduce(max) + 1] = User(
-          id: users.keys.reduce(max) + 1,
-          name: name,
-          lastName: lastName,
-          carBrand: carBrand,
-          dookieSave: dookieBaseSave);
+      userId = users.keys.reduce(max) + 1;
     }
+    users[userId] = User(
+        id: userId,
+        name: name,
+        lastName: lastName,
+        carBrand: carBrand,
+        dookieSave: dookieBaseSave(userId));
+    writeUsers();
     notifyListeners();
+  }
+
+  void saveUsers() {
+    writeUsers();
   }
 }
