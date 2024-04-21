@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'dart:math';
 import 'package:dookie_controls/color_schemes/color_schemes.g.dart';
 import 'package:dookie_controls/imports.dart';
 import 'package:dookie_controls/dookie_notifier.dart';
-import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
+import 'package:dookie_controls/ads.dart';
 
 void main() {
   runApp(const MyApp());
@@ -311,10 +312,63 @@ class DookieClicker extends StatefulWidget {
 class _DookieClickerState extends State<DookieClicker> {
   late ColorScheme colorScheme;
   late DookieNotifier dookieNotifier;
+  bool adsEnabled = true;
+
+  int ad1 = Random().nextInt(Ads.verticalAds.length);
+  int ad2 = Random().nextInt(Ads.verticalAds.length);
+  int ad3 = Random().nextInt(Ads.verticalAds.length);
+  int ad4 = Random().nextInt(Ads.verticalAds.length);
+  int ad5 = Random().nextInt(Ads.verticalAds.length);
+  int ad6 = Random().nextInt(Ads.verticalAds.length);
+
+  int horizontalAd1 = Random().nextInt(Ads.horizontalAds.length);
+  int horizontalAd2 = Random().nextInt(Ads.horizontalAds.length);
+
   @override
   Widget build(BuildContext context) {
     colorScheme = Theme.of(context).colorScheme;
     dookieNotifier = Provider.of<DookieNotifier>(context);
+    return adsEnabled ? adView() : clickerView();
+  }
+
+  Row adView() {
+    return Row(
+      children: [
+        Expanded(
+          flex: 1,
+          child: Column(
+            children: [
+              Ads(verticalAd: true, adIndex: ad1),
+              Ads(verticalAd: true, adIndex: ad2),
+              Ads(verticalAd: true, adIndex: ad3),
+            ],
+          ),
+        ),
+        Expanded(
+          flex: 3,
+          child: Column(
+            children: [
+              Ads(verticalAd: false, adIndex: horizontalAd1),
+              Expanded(child: clickerView()),
+              Ads(verticalAd: false, adIndex: horizontalAd2),
+            ],
+          ),
+        ),
+        Expanded(
+          flex: 1,
+          child: Column(
+            children: [
+              Ads(verticalAd: true, adIndex: ad4),
+              Ads(verticalAd: true, adIndex: ad5),
+              Ads(verticalAd: true, adIndex: ad6),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Column clickerView() {
     return Column(
       children: [
         Expanded(
@@ -325,13 +379,15 @@ class _DookieClickerState extends State<DookieClicker> {
               children: [
                 const Text("Dookie Clicker"),
                 ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      dookieNotifier.dookierStorage.dookieAmount += 1;
-                    });
-                  },
-                  child: const Text("Click"),
-                ),
+                    onPressed: () {
+                      setState(() {
+                        dookieNotifier.dookierStorage.dookieAmount += 1;
+                      });
+                    },
+                    child: Icon(
+                      Icons.emoji_emotions_outlined,
+                      color: colorScheme.onPrimaryContainer,
+                    )),
                 Text(
                     "${dookieNotifier.dookierStorage.getDookieAmount()} Dookies"),
               ],
@@ -342,8 +398,9 @@ class _DookieClickerState extends State<DookieClicker> {
           flex: 3,
           child: Center(
               child: GridView.builder(
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
+            shrinkWrap: true,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: adsEnabled ? 2 : 3,
             ),
             itemCount: dookieNotifier.dookierStorage.upgrades.length,
             itemBuilder: (BuildContext context, int index) {
@@ -361,18 +418,28 @@ class _DookieClickerState extends State<DookieClicker> {
   Widget upgradeButton(
       {required DookieUpgrade upgrade,
       required DookieNotifier dookieNotifier}) {
-    return ElevatedButton(
-      onPressed: () {
-        if (dookieNotifier.dookierStorage.dookieAmount >= upgrade.price) {
-          setState(() {
-            dookieNotifier.dookierStorage.dookieAmount -= upgrade.price;
-            upgrade.amount++;
-          });
-        }
-      },
-      child: Text(
-        "${upgrade.name}\n${upgrade.priceString} d's\n${upgrade.dookiesPerSecond} dps\n${upgrade.amount} owned",
-        textAlign: TextAlign.center,
+    return Padding(
+      padding: const EdgeInsets.all(2.0),
+      child: ElevatedButton(
+        onPressed: () {
+          if (dookieNotifier.dookierStorage.dookieAmount >= upgrade.price) {
+            setState(() {
+              dookieNotifier.dookierStorage.dookieAmount -= upgrade.price;
+              upgrade.amount++;
+            });
+          }
+        },
+        style: ButtonStyle(
+          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15),
+            ),
+          ),
+        ),
+        child: Text(
+          "${upgrade.name}\n${upgrade.priceString} d's\n${upgrade.amount} owned",
+          textAlign: TextAlign.center,
+        ),
       ),
     );
   }
