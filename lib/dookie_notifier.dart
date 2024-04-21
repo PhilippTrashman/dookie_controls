@@ -244,11 +244,10 @@ class DookieNotifier extends ChangeNotifier {
     dookierStorage.dookieMultiplier = dookieMultiplier;
   }
 
-  static CarBrand carBrand = CarBrand("Toyota", "toyota_logo.png");
   static List users = [
-    User(name: "John", lastName: "Doe", carBrand: carBrand),
-    User(name: "Jane", lastName: "Doe", carBrand: carBrand),
-    User(name: "Fort", lastName: "Nite", carBrand: carBrand)
+    User(name: "John", lastName: "Doe", carBrand: carBrands[1]!),
+    User(name: "Jane", lastName: "Doe", carBrand: carBrands[2]!),
+    User(name: "Fort", lastName: "Nite", carBrand: carBrands[3]!),
   ];
   void init(BuildContext context) {
     colorScheme = Theme.of(context).colorScheme;

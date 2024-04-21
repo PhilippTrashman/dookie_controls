@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:dookie_controls/color_schemes/color_schemes.g.dart';
 import 'package:dookie_controls/imports.dart';
 import 'package:dookie_controls/dookie_notifier.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:dookie_controls/ads.dart';
 
@@ -81,7 +82,7 @@ class _MyHomePageState extends State<MyHomePage> {
               itemBuilder: (BuildContext context, int index) {
                 return ignitionKey(user: users[index]);
               },
-            ))
+            )),
           ],
         )));
   }
@@ -124,16 +125,20 @@ class _MyHomePageState extends State<MyHomePage> {
           children: [
             Text(
               user.name,
+              textAlign: TextAlign.center,
               style: TextStyle(color: colorScheme.onSecondaryContainer),
             ),
             Text(
               user.lastName,
+              textAlign: TextAlign.center,
               style: TextStyle(color: colorScheme.onSecondaryContainer),
             ),
-            Icon(
-              Icons.car_rental,
-              color: colorScheme.onSecondaryContainer,
-            )
+            Expanded(
+              child: SvgPicture.asset(
+                'assets/brands/bmw.svg',
+                fit: BoxFit.contain,
+              ),
+            ),
           ],
         ),
       ),

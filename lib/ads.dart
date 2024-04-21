@@ -8,13 +8,16 @@ class Ads extends StatelessWidget {
 
   static final List<String> horizontalAds = [
     'assets/ads/HonkHonkStarrail.jpg',
+    'assets/ads/Chinese_therapy.gif',
   ];
   static final List<String> verticalAds = [
     'assets/ads/ballin.gif',
     'assets/ads/create_your_adventure.png',
     'assets/ads/Order_Up.png',
     'assets/ads/Rise_of_Burger.png',
-    'assets/ads/shadow_wizard_money_gang.jpg'
+    'assets/ads/shadow_wizard_money_gang.jpg',
+    'assets/ads/elden_heroes.gif',
+    'assets/ads/su_anuncio_aqui.gif',
   ];
 
   int get horizontalAmount => horizontalAds.length;
