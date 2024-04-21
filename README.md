@@ -11,3 +11,9 @@ Control Component for the ShitBox3000
     - __Random Chinese Brand__: Shitbox but in Chinese `狗屎盒 - Gǒu shǐ hé`, receives 1 sec Input Lag, most buttons dont work, Chinese Background Music
 
 - Dookie Clicker, a knock-off cookie clicker  
+
+
+## Colors
+Color Scheme used in the App
+
+![Fortnite](assets/color_pallet.png)

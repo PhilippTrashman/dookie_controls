@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:dookie_controls/color_schemes/color_schemes.g.dart';
 import 'package:dookie_controls/imports.dart';
 import 'package:dookie_controls/dookie_notifier.dart';
+import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -59,8 +60,11 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget logInScreen() {
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          title: Text(widget.title),
+          backgroundColor: colorScheme.secondaryContainer,
+          title: Text(
+            widget.title,
+            style: TextStyle(color: colorScheme.onSecondaryContainer),
+          ),
         ),
         body: Center(
             child: Column(
@@ -91,11 +95,11 @@ class _MyHomePageState extends State<MyHomePage> {
       icon: selectedUser != null
           ? Icon(
               Icons.lock_open,
-              color: colorScheme.primary,
+              color: colorScheme.onPrimaryContainer,
             )
           : Icon(
               Icons.lock,
-              color: colorScheme.primary,
+              color: colorScheme.onPrimaryContainer,
             ),
     );
   }
@@ -111,7 +115,7 @@ class _MyHomePageState extends State<MyHomePage> {
         margin: const EdgeInsets.all(10),
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primary,
+          color: Theme.of(context).colorScheme.secondaryContainer,
           borderRadius: BorderRadius.circular(10),
         ),
         child: Column(
@@ -119,15 +123,15 @@ class _MyHomePageState extends State<MyHomePage> {
           children: [
             Text(
               user.name,
-              style: TextStyle(color: colorScheme.onPrimary),
+              style: TextStyle(color: colorScheme.onSecondaryContainer),
             ),
             Text(
               user.lastName,
-              style: TextStyle(color: colorScheme.onPrimary),
+              style: TextStyle(color: colorScheme.onSecondaryContainer),
             ),
             Icon(
               Icons.car_rental,
-              color: colorScheme.onPrimary,
+              color: colorScheme.onSecondaryContainer,
             )
           ],
         ),
@@ -192,8 +196,11 @@ class _MainPageState extends State<MainPage> {
             key: _scaffoldKey,
             drawer: menuDrawer(),
             appBar: AppBar(
-              backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-              title: const Text("Dookie Controls"),
+              backgroundColor: colorScheme.secondaryContainer,
+              title: Text(
+                "Dookie Controls",
+                style: TextStyle(color: colorScheme.onSecondaryContainer),
+              ),
               leading: IconButton(
                 onPressed: () {
                   _scaffoldKey.currentState!.openDrawer();
@@ -209,6 +216,28 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
+  ListTile menuButton(
+      {required String title,
+      required int index,
+      required IconData icon,
+      required IconData iconSelected}) {
+    return ListTile(
+      title: Text(
+        title,
+        style: TextStyle(color: colorScheme.onSecondaryContainer),
+      ),
+      leading: Icon(
+        selectedPage == index ? iconSelected : icon,
+        color: colorScheme.onSecondaryContainer,
+      ),
+      onTap: () {
+        setState(() {
+          selectedPage = index;
+        });
+      },
+    );
+  }
+
   Drawer menuDrawer() {
     return Drawer(
       child: ListView(
@@ -216,64 +245,46 @@ class _MainPageState extends State<MainPage> {
         children: [
           DrawerHeader(
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary,
+              color: Theme.of(context).colorScheme.secondaryContainer,
             ),
             child: Text(
               'Dookie Controls',
               style: TextStyle(
-                color: Theme.of(context).colorScheme.onPrimary,
+                color: Theme.of(context).colorScheme.onSecondaryContainer,
                 fontSize: 24,
               ),
             ),
           ),
-          ListTile(
-            title: const Text('Home'),
-            onTap: () {
-              setState(() {
-                selectedPage = 0;
-              });
-            },
-          ),
-          ListTile(
-            title: const Text('Joystick View'),
-            onTap: () {
-              setState(() {
-                selectedPage = 1;
-              });
-            },
-          ),
-          ListTile(
-            title: const Text('Dookie Clicker'),
-            onTap: () {
-              setState(() {
-                selectedPage = 2;
-              });
-            },
-          ),
-          ListTile(
-            title: const Text('Car Customization'),
-            onTap: () {
-              setState(() {
-                selectedPage = 3;
-              });
-            },
-          ),
-          ListTile(
-            title: const Text('Settings'),
-            onTap: () {
-              setState(() {
-                selectedPage = 4;
-              });
-            },
-          ),
-          ListTile(
-            title: const Text('Info'),
-            onTap: () {
-              setState(() {
-                selectedPage = 5;
-              });
-            },
-          ),
+          menuButton(
+              title: "Home",
+              index: 0,
+              icon: Icons.home_outlined,
+              iconSelected: Icons.home),
+          menuButton(
+              title: "Joystick View",
+              index: 1,
+              icon: Icons.sports_esports_outlined,
+              iconSelected: Icons.sports_esports),
+          menuButton(
+              title: "Dookie Clicker",
+              index: 2,
+              icon: Icons.payments_outlined,
+              iconSelected: Icons.payments),
+          menuButton(
+              title: "Car Customization",
+              index: 3,
+              icon: Icons.car_rental_outlined,
+              iconSelected: Icons.car_rental),
+          menuButton(
+              title: "Settings",
+              index: 4,
+              icon: Icons.settings_outlined,
+              iconSelected: Icons.settings),
+          menuButton(
+              title: "Info",
+              index: 5,
+              icon: Icons.info_outline,
+              iconSelected: Icons.info),
         ],
       ),
     );
