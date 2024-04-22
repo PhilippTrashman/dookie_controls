@@ -52,6 +52,8 @@ class _AdsState extends State<Ads> {
 
   Widget adObject(AdModel ad) {
     return Container(
+      // width: widget.verticalAd ? 540 : 192,
+      // height: widget.verticalAd ? 192 : 540,
       child: InkWell(
         onTap: () async {
           final Uri url = Uri.parse(ad.link);
@@ -61,7 +63,7 @@ class _AdsState extends State<Ads> {
         },
         child: Image.asset(
           ad.imageUrl,
-          fit: BoxFit.cover,
+          fit: BoxFit.fill,
         ),
       ),
     );

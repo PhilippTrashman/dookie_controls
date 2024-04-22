@@ -35,10 +35,10 @@ class _Dookie3DViewerState extends State<Dookie3DViewer> {
             child: Row(
           children: [
             IconButton(
-                onPressed: () => controller.cameraOrbit(20, 20, 5),
+                onPressed: () => controller.cameraOrbit(-25, 90, 50),
                 icon: const Icon(Icons.change_circle)),
             IconButton(
-                onPressed: () => controller.cameraTarget(1.2, 1, 4),
+                onPressed: () => controller.cameraTarget(0, 0, 0),
                 icon: const Icon(Icons.change_circle_outlined)),
           ],
         )),

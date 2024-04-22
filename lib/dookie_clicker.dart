@@ -67,67 +67,81 @@ class _DookieClickerState extends State<DookieClicker> {
     );
   }
 
-  Column clickerView() {
-    return Column(
-      children: [
-        Expanded(
-          flex: 1,
-          child: Center(
-            child: Container(
-                child: Column(
-              children: [
-                const Text("Dookie Clicker"),
-                ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        if (dookieNotifier.selectedUser != null) {
-                          dookieNotifier
-                              .selectedUser!.dookieSave.dookieAmount += 1;
-                        }
-                      });
-                    },
-                    child: Icon(
-                      Icons.emoji_emotions_outlined,
-                      color: colorScheme.onPrimaryContainer,
-                    )),
-                Text(
-                  dookieNotifier.selectedUser != null
-                      ? "${dookieNotifier.selectedUser!.dookieSave.getDookieAmount()} Dookies"
-                      : "No User Selected",
-                ),
-              ],
-            )),
+  Widget clickerView() {
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints constraints) {
+        double width = constraints.maxWidth;
+        double height = constraints.maxHeight;
+        bool vertical = height > width;
+        int crossAxisCount = vertical ? width ~/ 125 : width ~/ 150;
+        int itemCount = crossAxisCount > 0 ? crossAxisCount : 1;
+        List<Widget> children = [
+          Expanded(
+            flex: 1,
+            child: clickButton(),
           ),
-        ),
-        Expanded(
+          Expanded(
             flex: 3,
-            child: LayoutBuilder(
-              builder: (BuildContext context, BoxConstraints constraints) {
-                int crossAxisCount = constraints.maxWidth ~/ 125;
-                return GridView.builder(
-                  shrinkWrap: true,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount:
-                        adsEnabled() ? crossAxisCount : crossAxisCount,
-                  ),
-                  itemCount: dookieNotifier.selectedUser != null
-                      ? dookieNotifier.selectedUser!.dookieSave.upgrades.length
-                      : 0,
-                  itemBuilder: (BuildContext context, int index) {
-                    if (dookieNotifier.selectedUser != null) {
-                      return upgradeButton(
-                        upgrade: dookieNotifier
-                            .selectedUser!.dookieSave.upgrades[index],
-                        dookieNotifier: dookieNotifier,
-                      );
-                    } else {
-                      return const SizedBox();
-                    }
-                  },
-                );
+            child: GridView.builder(
+              shrinkWrap: true,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: itemCount,
+              ),
+              itemCount: dookieNotifier.selectedUser != null
+                  ? dookieNotifier.selectedUser!.dookieSave.upgrades.length
+                  : 0,
+              itemBuilder: (BuildContext context, int index) {
+                if (dookieNotifier.selectedUser != null) {
+                  return upgradeButton(
+                    upgrade:
+                        dookieNotifier.selectedUser!.dookieSave.upgrades[index],
+                    dookieNotifier: dookieNotifier,
+                  );
+                } else {
+                  return const SizedBox();
+                }
               },
-            ))
-      ],
+            ),
+          ),
+        ];
+
+        if (vertical) {
+          return Column(
+            children: children,
+          );
+        }
+        return Row(
+          children: children,
+        );
+      },
+    );
+  }
+
+  Center clickButton() {
+    return Center(
+      child: Container(
+          child: Column(
+        children: [
+          const Text("Dookie Clicker"),
+          ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  if (dookieNotifier.selectedUser != null) {
+                    dookieNotifier.selectedUser!.dookieSave.dookieAmount += 1;
+                  }
+                });
+              },
+              child: Icon(
+                Icons.emoji_emotions_outlined,
+                color: colorScheme.onPrimaryContainer,
+              )),
+          Text(
+            dookieNotifier.selectedUser != null
+                ? "${dookieNotifier.selectedUser!.dookieSave.getDookieAmount()} Dookies"
+                : "No User Selected",
+          ),
+        ],
+      )),
     );
   }
 
