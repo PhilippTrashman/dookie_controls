@@ -16,7 +16,6 @@ class DookieClicker extends StatefulWidget {
 class _DookieClickerState extends State<DookieClicker> {
   late ColorScheme colorScheme;
   late DookieNotifier dookieNotifier;
-  bool adsEnabled = true;
 
   int ad1 = Random().nextInt(Ads.verticalAds.length);
   int ad2 = Random().nextInt(Ads.verticalAds.length);
@@ -28,11 +27,15 @@ class _DookieClickerState extends State<DookieClicker> {
   int horizontalAd1 = Random().nextInt(Ads.horizontalAds.length);
   int horizontalAd2 = Random().nextInt(Ads.horizontalAds.length);
 
+  bool adsEnabled() {
+    return dookieNotifier.selectedUser!.carBrand.id == 1;
+  }
+
   @override
   Widget build(BuildContext context) {
     colorScheme = Theme.of(context).colorScheme;
     dookieNotifier = Provider.of<DookieNotifier>(context);
-    return adsEnabled ? adView() : clickerView();
+    return adsEnabled() ? adView() : clickerView();
   }
 
   Row adView() {
@@ -114,7 +117,7 @@ class _DookieClickerState extends State<DookieClicker> {
               child: GridView.builder(
             shrinkWrap: true,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: adsEnabled ? 2 : 3,
+              crossAxisCount: adsEnabled() ? 2 : 3,
             ),
             itemCount: dookieNotifier.selectedUser != null
                 ? dookieNotifier.selectedUser!.dookieSave.upgrades.length

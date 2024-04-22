@@ -171,8 +171,10 @@ class _MyHomePageState extends State<MyHomePage> {
           return PopScope(
             canPop: false,
             child: AlertDialog(
+              scrollable: true,
               title: const Text('Add User'),
               content: Container(
+                height: 210,
                 child: Column(
                   children: [
                     TextField(
@@ -187,7 +189,10 @@ class _MyHomePageState extends State<MyHomePage> {
                         padding: const EdgeInsets.all(8.0),
                         child: DropdownMenu(
                           label: const Text('Car Brand'),
+                          requestFocusOnTap: false,
+                          selectedTrailingIcon: Icon(Icons.arrow_drop_down),
                           dropdownMenuEntries: getCarBrands(),
+                          menuHeight: 150,
                           expandedInsets:
                               const EdgeInsets.symmetric(vertical: 5.0),
                           onSelected: (value) {
@@ -227,7 +232,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void login() {
     if (selectedUser != null) {
-      if (selectedUser!.carBrand.name == '狗屎盒') {
+      if (selectedUser!.carBrand.id == 5) {
         int randomNumber = Random().nextInt(10);
         int randomNumber2 = Random().nextInt(10);
         if (randomNumber == randomNumber2) {
@@ -249,6 +254,8 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             );
         }
+      } else if (selectedUser!.carBrand.id == 3) {
+        buyDLCPopup();
       } else {
         dookieNotifier.selectUser(selectedUser!);
         selectedUser = null;
@@ -261,6 +268,48 @@ class _MyHomePageState extends State<MyHomePage> {
           );
       }
     }
+  }
+
+  void buyDLCPopup() {
+    showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (BuildContext context) {
+          return PopScope(
+            canPop: false,
+            child: AlertDialog(
+              scrollable: true,
+              title: const Text('Buy DLC'),
+              content: Container(
+                height: 210,
+                child: const Column(
+                  children: [
+                    Text(
+                        'To Drive the Legendary Mercedes-Benz, you must buy the DLC for 9.99€ a Month.'),
+                    Text('Do you want to buy the DLC?'),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('HELL NAH')),
+                TextButton(
+                    onPressed: () async {
+                      final Uri url =
+                          Uri.parse('https://www.mercedes-benz.com/');
+                      if (!await launchUrl(url)) {
+                        throw Exception('Could not launch $url');
+                      }
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('YES, I CLAIM!!!')),
+              ],
+            ),
+          );
+        });
   }
 
   Widget ignitionLock() {
