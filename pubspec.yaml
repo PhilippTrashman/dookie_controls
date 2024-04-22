@@ -24,6 +24,7 @@ dependencies:
 
   # model_viewer_plus: ^1.7.2
   o3d: ^3.1.0
+  scoped_model: ^2.0.0
 
 dev_dependencies:
   flutter_test:

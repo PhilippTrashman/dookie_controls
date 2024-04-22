@@ -9,6 +9,7 @@ import 'package:dookie_controls/dookie_clicker.dart';
 import 'dart:async';
 
 import 'package:dookie_controls/3d_viewer.dart';
+import 'package:dookie_controls/bluetooth_serial/MainPage.dart';
 
 void main() {
   runApp(const MyApp());
@@ -28,6 +29,7 @@ class MyApp extends StatelessWidget {
           colorScheme: darkColorScheme,
         ),
         home: const MyHomePage(title: 'Dookie Controls'),
+        // home: BluetoothPage(),
       ),
     );
   }
