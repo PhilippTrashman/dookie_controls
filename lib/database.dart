@@ -13,8 +13,8 @@ class JsonDatabase {
 
   static Future<String> get _localPath async {
     const documentsPath = 'storage/emulated/0/Documents';
-    final basePath = await getExternalStorageDirectory().then((value) {
-      return value == null ? value!.path : documentsPath;
+    final basePath = await getApplicationDocumentsDirectory().then((value) {
+      return value.path;
     });
     const databasePath = 'DoockieControls/database.json';
     var status = await Permission.storage.status;

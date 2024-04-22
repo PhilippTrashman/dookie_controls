@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'dart:math';
 
-class Ads extends StatelessWidget {
-  Ads({super.key, required this.verticalAd, required this.adIndex});
+class Ads extends StatefulWidget {
+  Ads({super.key, required this.verticalAd});
 
   final bool verticalAd;
-  final int adIndex;
-
   static final List<AdModel> horizontalAds = [
     AdModel(
         imageUrl: 'assets/ads/HonkHonkStarrail.jpg',
@@ -40,29 +39,39 @@ class Ads extends StatelessWidget {
         link: 'https://www.youtube.com/watch?v=cJjl7EbfQDs'),
   ];
 
-  int get horizontalAmount => horizontalAds.length;
-  int get verticalAmount => verticalAds.length;
+  @override
+  State<Ads> createState() => _AdsState();
+}
 
-  Widget AdObject(AdModel ad) {
-    return InkWell(
-      onTap: () async {
-        final Uri url = Uri.parse(ad.link);
-        if (!await launchUrl(url)) {
-          throw Exception('Could not launch $url');
-        }
-      },
-      child: Image.asset(
-        ad.imageUrl,
-        fit: BoxFit.cover,
+class _AdsState extends State<Ads> {
+  final adIndex = Random().nextInt(Ads.verticalAds.length);
+
+  int get horizontalAmount => Ads.horizontalAds.length;
+
+  int get verticalAmount => Ads.verticalAds.length;
+
+  Widget adObject(AdModel ad) {
+    return Container(
+      child: InkWell(
+        onTap: () async {
+          final Uri url = Uri.parse(ad.link);
+          if (!await launchUrl(url)) {
+            throw Exception('Could not launch $url');
+          }
+        },
+        child: Image.asset(
+          ad.imageUrl,
+          fit: BoxFit.cover,
+        ),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return verticalAd
-        ? AdObject(verticalAds[adIndex % verticalAmount])
-        : AdObject(horizontalAds[adIndex % horizontalAmount]);
+    return widget.verticalAd
+        ? adObject(Ads.verticalAds[adIndex % verticalAmount])
+        : adObject(Ads.horizontalAds[adIndex % horizontalAmount]);
   }
 }
 

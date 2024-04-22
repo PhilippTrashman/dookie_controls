@@ -112,19 +112,26 @@ class _MyHomePageState extends State<MyHomePage> {
               style: TextStyle(color: colorScheme.onPrimaryContainer),
             ),
             Expanded(
-                flex: 4,
-                child: GridView.builder(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                  ),
-                  itemCount: dookieNotifier.users.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    if (dookieNotifier.users.isEmpty) {
-                      return const SizedBox();
-                    }
-                    return ignitionKey(user: dookieNotifier.users[index]!);
-                  },
-                )),
+              flex: 4,
+              child: LayoutBuilder(
+                builder: (BuildContext context, BoxConstraints constraints) {
+                  int crossAxisCount = constraints.maxWidth ~/
+                      200; // Adjust the divisor to fit your needs
+                  return GridView.builder(
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: crossAxisCount,
+                    ),
+                    itemCount: dookieNotifier.users.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      if (dookieNotifier.users.isEmpty) {
+                        return const SizedBox();
+                      }
+                      return ignitionKey(user: dookieNotifier.users[index]!);
+                    },
+                  );
+                },
+              ),
+            ),
             Expanded(
               child: Container(
                   color: colorScheme.secondaryContainer,

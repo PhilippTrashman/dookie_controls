@@ -57,9 +57,7 @@ class DookieNotifier extends ChangeNotifier {
   JsonDatabase jsonDatabase = JsonDatabase();
 
   Future<String> readUsers() async {
-    print('Reading users');
     users = await jsonDatabase.readDatabase();
-    print('Users read');
     notifyListeners();
     return 'done';
   }
@@ -89,7 +87,7 @@ class DookieNotifier extends ChangeNotifier {
         notifyListeners();
       });
       _autoSaveTimer =
-          Timer.periodic(const Duration(seconds: 60), (timer) async {
+          Timer.periodic(const Duration(seconds: 30), (timer) async {
         await saveUser();
       });
     }

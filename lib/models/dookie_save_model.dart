@@ -169,11 +169,11 @@ class DookieUpgradeConnection {
     if (amount == 0) {
       return upgrade.price;
     }
-    return upgrade.price * (1.15 * amount);
+    return (upgrade.price * (pow(1.15, amount))) / 1.15;
   }
 
   String get priceString {
-    double price = upgrade.price;
+    double price = this.price;
     int increment = 0;
     while (price >= 1000 && increment < increments.length) {
       price /= 1000;

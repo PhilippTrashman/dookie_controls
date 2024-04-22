@@ -41,40 +41,28 @@ class _DookieClickerState extends State<DookieClicker> {
   Row adView() {
     return Row(
       children: [
-        Expanded(
-          flex: 1,
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                Ads(verticalAd: true, adIndex: ad1),
-                Ads(verticalAd: true, adIndex: ad2),
-                Ads(verticalAd: true, adIndex: ad3),
-              ],
-            ),
-          ),
-        ),
+        verticalBanner(),
         Expanded(
           flex: 3,
           child: Column(
             children: [
-              Ads(verticalAd: false, adIndex: horizontalAd1),
-              Expanded(child: clickerView()),
-              Ads(verticalAd: false, adIndex: horizontalAd2),
+              Expanded(child: Ads(verticalAd: false)),
+              Expanded(flex: 5, child: clickerView()),
+              Expanded(child: Ads(verticalAd: false)),
             ],
           ),
         ),
-        Expanded(
-          flex: 1,
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                Ads(verticalAd: true, adIndex: ad4),
-                Ads(verticalAd: true, adIndex: ad5),
-                Ads(verticalAd: true, adIndex: ad6),
-              ],
-            ),
-          ),
-        ),
+        verticalBanner(),
+      ],
+    );
+  }
+
+  Column verticalBanner() {
+    return Column(
+      children: [
+        Expanded(child: Ads(verticalAd: true)),
+        Expanded(child: Ads(verticalAd: true)),
+        Expanded(child: Ads(verticalAd: true)),
       ],
     );
   }
@@ -112,29 +100,33 @@ class _DookieClickerState extends State<DookieClicker> {
           ),
         ),
         Expanded(
-          flex: 3,
-          child: Center(
-              child: GridView.builder(
-            shrinkWrap: true,
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: adsEnabled() ? 2 : 3,
-            ),
-            itemCount: dookieNotifier.selectedUser != null
-                ? dookieNotifier.selectedUser!.dookieSave.upgrades.length
-                : 0,
-            itemBuilder: (BuildContext context, int index) {
-              if (dookieNotifier.selectedUser != null) {
-                return upgradeButton(
-                  upgrade:
-                      dookieNotifier.selectedUser!.dookieSave.upgrades[index],
-                  dookieNotifier: dookieNotifier,
+            flex: 3,
+            child: LayoutBuilder(
+              builder: (BuildContext context, BoxConstraints constraints) {
+                int crossAxisCount = constraints.maxWidth ~/ 125;
+                return GridView.builder(
+                  shrinkWrap: true,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount:
+                        adsEnabled() ? crossAxisCount : crossAxisCount,
+                  ),
+                  itemCount: dookieNotifier.selectedUser != null
+                      ? dookieNotifier.selectedUser!.dookieSave.upgrades.length
+                      : 0,
+                  itemBuilder: (BuildContext context, int index) {
+                    if (dookieNotifier.selectedUser != null) {
+                      return upgradeButton(
+                        upgrade: dookieNotifier
+                            .selectedUser!.dookieSave.upgrades[index],
+                        dookieNotifier: dookieNotifier,
+                      );
+                    } else {
+                      return const SizedBox();
+                    }
+                  },
                 );
-              } else {
-                return const SizedBox();
-              }
-            },
-          )),
-        )
+              },
+            ))
       ],
     );
   }
