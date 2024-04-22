@@ -56,9 +56,12 @@ class DookieNotifier extends ChangeNotifier {
 
   JsonDatabase jsonDatabase = JsonDatabase();
 
-  Future<void> readUsers() async {
+  Future<String> readUsers() async {
+    print('Reading users');
     users = await jsonDatabase.readDatabase();
+    print('Users read');
     notifyListeners();
+    return 'done';
   }
 
   Future<void> writeUsers() async {
@@ -107,6 +110,7 @@ class DookieNotifier extends ChangeNotifier {
   }
 
   void logout() {
+    saveUser();
     selectedUser = null;
     stopTimer();
     notifyListeners();

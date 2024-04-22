@@ -16,7 +16,7 @@ class JsonDatabase {
     final basePath = await getExternalStorageDirectory().then((value) {
       return value == null ? value!.path : documentsPath;
     });
-    const databasePath = 'DoockieControls/database.gz';
+    const databasePath = 'DoockieControls/database.json';
     var status = await Permission.storage.status;
     if (status == PermissionStatus.denied) {
       await Permission.storage.request();
@@ -34,16 +34,26 @@ class JsonDatabase {
 
   void _writeJson({required Map data, required String path}) {
     final json = _encoder.convert(data);
-    final compressed = GZipCodec().encode(utf8.encode(json));
-    print('Writing to $path');
-    File(path).writeAsStringSync(compressed.toString());
+    // final compressed = GZipCodec().encode(utf8.encode(json));
+    // print('Writing to $path');
+    // File(path).writeAsBytesSync(compressed);
+    File(path).writeAsStringSync(json);
     print('Done');
   }
 
   Map _readJson({required String path}) {
-    final compressed = File(path).readAsBytesSync();
-    final json = utf8.decode(GZipCodec().decode(compressed));
-    return _decoder.convert(json);
+    try {
+      // final compressed = File(path).readAsBytesSync();
+      // final json = utf8.decode(GZipCodec().decode(compressed));
+      // return _decoder.convert(json);
+      final json = File(path).readAsStringSync();
+      final data = jsonDecode(json);
+      return data;
+    } catch (e) {
+      print('Error reading file: $e');
+      _writeJson(data: {}, path: path);
+      return {};
+    }
   }
 
   Future<void> writeDatabase({required Map<int, User> data}) async {
@@ -68,10 +78,14 @@ class JsonDatabase {
     final path = await _localPath;
     final data = _readJson(path: path);
     Map<int, User> users = {};
-
-    for (final key in data.keys) {
-      final user = User.fromJson(data[key]);
-      users[int.parse(key)] = user;
+    try {
+      for (final key in data.keys) {
+        final user = User.fromJson(data[key]);
+        print(user.toJson());
+        users[int.parse(key)] = user;
+      }
+    } catch (e) {
+      print(e);
     }
 
     return users;

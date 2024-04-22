@@ -3,10 +3,10 @@ import 'dart:math';
 import 'package:dookie_controls/color_schemes/color_schemes.g.dart';
 import 'package:dookie_controls/imports.dart';
 import 'package:dookie_controls/dookie_notifier.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:dookie_controls/dookie_clicker.dart';
+import 'dart:async';
 
 void main() {
   runApp(const MyApp());
@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (context) => DookieNotifier(),
       child: MaterialApp(
-        title: 'Flutter Demo',
+        title: 'Dookie Controls',
         theme: ThemeData(
           useMaterial3: true,
           colorScheme: darkColorScheme,
@@ -41,15 +41,48 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final refreshCompleter = Completer<void>();
   late ColorScheme colorScheme;
   User? selectedUser;
   List users = [];
+  late Future<String> _initFuture;
   late DookieNotifier dookieNotifier;
   @override
   Widget build(BuildContext context) {
     colorScheme = Theme.of(context).colorScheme;
     dookieNotifier = Provider.of<DookieNotifier>(context);
-    return shownScreen();
+    // if (!dookieNotifier.databaseReady) {
+    //   init();
+    // }
+    return loadingScreen();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    var dookieNotifier = context.read<DookieNotifier>();
+    _initFuture = dookieNotifier.readUsers();
+  }
+
+  Future<void> init() async {
+    await dookieNotifier.readUsers();
+  }
+
+  Widget loadingScreen() {
+    return FutureBuilder<String>(
+      future: _initFuture,
+      builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        } else {
+          return shownScreen();
+        }
+      },
+    );
   }
 
   Widget shownScreen() {
@@ -352,40 +385,49 @@ class _MainPageState extends State<MainPage> {
     }
     colorScheme = Theme.of(context).colorScheme;
 
-    return Stack(
-      children: [
-        Scaffold(
-            key: _scaffoldKey,
-            drawer: menuDrawer(),
-            appBar: AppBar(
-              backgroundColor: colorScheme.secondaryContainer,
-              title: Text(
-                "Dookie Controls",
-                style: TextStyle(color: colorScheme.onSecondaryContainer),
-              ),
-              leading: IconButton(
-                onPressed: () {
-                  _scaffoldKey.currentState!.openDrawer();
-                },
-                icon: Icon(
-                  Icons.menu,
-                  color: colorScheme.primary,
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) {
+        debugPrint('Popped Main Screen');
+        if (!didPop) {
+          dookieNotifier.logout();
+        }
+      },
+      child: Stack(
+        children: [
+          Scaffold(
+              key: _scaffoldKey,
+              drawer: menuDrawer(),
+              appBar: AppBar(
+                backgroundColor: colorScheme.secondaryContainer,
+                title: Text(
+                  "Dookie Controls",
+                  style: TextStyle(color: colorScheme.onSecondaryContainer),
                 ),
-              ),
-              actions: [
-                IconButton(
+                leading: IconButton(
                   onPressed: () {
-                    dookieNotifier.logout();
+                    _scaffoldKey.currentState!.openDrawer();
                   },
                   icon: Icon(
-                    Icons.logout,
+                    Icons.menu,
                     color: colorScheme.primary,
                   ),
                 ),
-              ],
-            ),
-            body: page),
-      ],
+                actions: [
+                  IconButton(
+                    onPressed: () {
+                      dookieNotifier.logout();
+                    },
+                    icon: Icon(
+                      Icons.logout,
+                      color: colorScheme.primary,
+                    ),
+                  ),
+                ],
+              ),
+              body: page),
+        ],
+      ),
     );
   }
 
