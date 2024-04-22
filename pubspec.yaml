@@ -22,6 +22,9 @@ dependencies:
   path_provider: ^2.1.3
   permission_handler: ^11.3.1
 
+  # model_viewer_plus: ^1.7.2
+  o3d: ^3.1.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -47,3 +50,4 @@ flutter:
     - assets/images/pfps/
     - assets/ads/
     - assets/brands/
+    - assets/models/

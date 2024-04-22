@@ -8,6 +8,8 @@ import 'package:provider/provider.dart';
 import 'package:dookie_controls/dookie_clicker.dart';
 import 'dart:async';
 
+import 'package:dookie_controls/3d_viewer.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -431,7 +433,7 @@ class _MainPageState extends State<MainPage> {
         break;
       case 3:
         //
-        page = const Placeholder(text: 'Car Customization');
+        page = const Dookie3DViewer();
         break;
       case 4:
         page = const Placeholder(text: 'Settings');
