@@ -17,16 +17,6 @@ class _DookieClickerState extends State<DookieClicker> {
   late ColorScheme colorScheme;
   late DookieNotifier dookieNotifier;
 
-  int ad1 = Random().nextInt(Ads.verticalAds.length);
-  int ad2 = Random().nextInt(Ads.verticalAds.length);
-  int ad3 = Random().nextInt(Ads.verticalAds.length);
-  int ad4 = Random().nextInt(Ads.verticalAds.length);
-  int ad5 = Random().nextInt(Ads.verticalAds.length);
-  int ad6 = Random().nextInt(Ads.verticalAds.length);
-
-  int horizontalAd1 = Random().nextInt(Ads.horizontalAds.length);
-  int horizontalAd2 = Random().nextInt(Ads.horizontalAds.length);
-
   bool adsEnabled() {
     return dookieNotifier.selectedUser!.carBrand.id == 1;
   }

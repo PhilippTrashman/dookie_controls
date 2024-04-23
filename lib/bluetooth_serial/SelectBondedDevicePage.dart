@@ -3,7 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 
-import './BluetoothDeviceListEntry.dart';
+// import './BluetoothDeviceListEntry.dart';
+import 'package:dookie_controls/bluetooth_serial/BluetoothDeviceListEntry.dart';
 
 class SelectBondedDevicePage extends StatefulWidget {
   /// If true, on page start there is performed discovery upon the bonded devices.
@@ -107,8 +108,11 @@ class _SelectBondedDevicePage extends State<SelectBondedDevicePage> {
     super.dispose();
   }
 
+  late ColorScheme colorScheme;
+
   @override
   Widget build(BuildContext context) {
+    colorScheme = Theme.of(context).colorScheme;
     List<BluetoothDeviceListEntry> list = devices
         .map((_device) => BluetoothDeviceListEntry(
               device: _device.device,
@@ -121,6 +125,7 @@ class _SelectBondedDevicePage extends State<SelectBondedDevicePage> {
         .toList();
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: colorScheme.secondaryContainer,
         title: const Text('Select device'),
         actions: <Widget>[
           _isDiscovering

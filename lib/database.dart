@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:dookie_controls/imports.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -17,10 +18,10 @@ class JsonDatabase {
       return value.path;
     });
     const databasePath = 'DoockieControls/database.json';
-    var status = await Permission.storage.status;
-    if (status == PermissionStatus.denied) {
-      await Permission.storage.request();
-    }
+    // var status = await Permission.storage.status;
+    // if (status == PermissionStatus.denied) {
+    //   await Permission.storage.request();
+    // }
     final folderDir = Directory('$basePath/$folderPath');
     if (!folderDir.existsSync()) {
       folderDir.createSync(recursive: true);
@@ -58,10 +59,10 @@ class JsonDatabase {
 
   Future<void> writeDatabase({required Map<int, User> data}) async {
     final path = await _localPath;
-    var status = await Permission.storage.status;
-    if (status == PermissionStatus.denied) {
-      await Permission.storage.request();
-    }
+    // var status = await Permission.storage.status;
+    // if (status == PermissionStatus.denied) {
+    //   await Permission.storage.request();
+    // }
     final users = <String, Map<String, dynamic>>{};
     for (final key in data.keys) {
       users[key.toString()] = data[key]!.toJson();
@@ -81,11 +82,10 @@ class JsonDatabase {
     try {
       for (final key in data.keys) {
         final user = User.fromJson(data[key]);
-        print(user.toJson());
         users[int.parse(key)] = user;
       }
     } catch (e) {
-      print(e);
+      debugPrint('Error reading database: $e');
     }
 
     return users;

@@ -4,6 +4,8 @@ import 'package:dookie_controls/database.dart';
 import 'dart:async';
 import 'dart:math';
 
+import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
+
 DookieSave dookieBaseSave(int userId) {
   return DookieSave(
       id: userId,
@@ -54,6 +56,7 @@ class DookieNotifier extends ChangeNotifier {
   bool isTimerRunning = false;
   Map<int, User> users = {};
 
+  BluetoothDevice? connectedDevice;
   JsonDatabase jsonDatabase = JsonDatabase();
 
   Future<String> readUsers() async {
