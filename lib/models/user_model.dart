@@ -36,8 +36,6 @@ class User {
   }
 
   factory User.fromJson(Map<String, dynamic> json) {
-    final carBrand = CarBrand.fromJson(json['car_brand']);
-    final dookieSave = DookieSave.fromJson(json['dookie_save']);
     return User(
       id: json['id'],
       name: json['name'],

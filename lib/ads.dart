@@ -3,7 +3,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'dart:math';
 
 class Ads extends StatefulWidget {
-  Ads({super.key, required this.verticalAd});
+  const Ads({super.key, required this.verticalAd});
 
   final bool verticalAd;
   static final List<AdModel> horizontalAds = [
@@ -51,20 +51,16 @@ class _AdsState extends State<Ads> {
   int get verticalAmount => Ads.verticalAds.length;
 
   Widget adObject(AdModel ad) {
-    return Container(
-      // width: widget.verticalAd ? 540 : 192,
-      // height: widget.verticalAd ? 192 : 540,
-      child: InkWell(
-        onTap: () async {
-          final Uri url = Uri.parse(ad.link);
-          if (!await launchUrl(url)) {
-            throw Exception('Could not launch $url');
-          }
-        },
-        child: Image.asset(
-          ad.imageUrl,
-          fit: BoxFit.fill,
-        ),
+    return InkWell(
+      onTap: () async {
+        final Uri url = Uri.parse(ad.link);
+        if (!await launchUrl(url)) {
+          throw Exception('Could not launch $url');
+        }
+      },
+      child: Image.asset(
+        ad.imageUrl,
+        fit: BoxFit.fill,
       ),
     );
   }

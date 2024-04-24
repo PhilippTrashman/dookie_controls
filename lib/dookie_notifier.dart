@@ -4,8 +4,6 @@ import 'package:dookie_controls/database.dart';
 import 'dart:async';
 import 'dart:math';
 
-import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
-
 DookieSave dookieBaseSave(int userId) {
   return DookieSave(
       id: userId,

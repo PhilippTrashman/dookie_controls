@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -36,9 +35,9 @@ class _DookieClickerState extends State<DookieClicker> {
           flex: 3,
           child: Column(
             children: [
-              Expanded(child: Ads(verticalAd: false)),
+              const Expanded(child: Ads(verticalAd: false)),
               Expanded(flex: 5, child: clickerView()),
-              Expanded(child: Ads(verticalAd: false)),
+              const Expanded(child: Ads(verticalAd: false)),
             ],
           ),
         ),
@@ -48,7 +47,7 @@ class _DookieClickerState extends State<DookieClicker> {
   }
 
   Column verticalBanner() {
-    return Column(
+    return const Column(
       children: [
         Expanded(child: Ads(verticalAd: true)),
         Expanded(child: Ads(verticalAd: true)),
@@ -109,8 +108,7 @@ class _DookieClickerState extends State<DookieClicker> {
 
   Center clickButton() {
     return Center(
-      child: Container(
-          child: Column(
+      child: Column(
         children: [
           const Text("Dookie Clicker"),
           ElevatedButton(
@@ -131,7 +129,7 @@ class _DookieClickerState extends State<DookieClicker> {
                 : "No User Selected",
           ),
         ],
-      )),
+      ),
     );
   }
 
