@@ -3,17 +3,15 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:dookie_controls/imports.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 import 'package:sqflite/sqflite.dart';
 
 class JsonDatabase {
   final _encoder = const JsonEncoder.withIndent('  ');
-  final _decoder = const JsonDecoder();
   static const folderPath = 'DoockieControls';
 
   static Future<String> get _localPath async {
-    const documentsPath = 'storage/emulated/0/Documents';
+    // const documentsPath = 'storage/emulated/0/Documents';
     final basePath = await getApplicationDocumentsDirectory().then((value) {
       return value.path;
     });
@@ -39,7 +37,6 @@ class JsonDatabase {
     // print('Writing to $path');
     // File(path).writeAsBytesSync(compressed);
     File(path).writeAsStringSync(json);
-    print('Done');
   }
 
   Map _readJson({required String path}) {
@@ -51,7 +48,7 @@ class JsonDatabase {
       final data = jsonDecode(json);
       return data;
     } catch (e) {
-      print('Error reading file: $e');
+      debugPrint('Error reading file: $e');
       _writeJson(data: {}, path: path);
       return {};
     }

@@ -518,6 +518,12 @@ class _MainPageState extends State<MainPage> {
 
   Drawer menuDrawer() {
     return Drawer(
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topRight: Radius.circular(0),
+          bottomRight: Radius.circular(0),
+        ),
+      ),
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
@@ -525,6 +531,7 @@ class _MainPageState extends State<MainPage> {
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.secondaryContainer,
             ),
+            padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 8.0),
             child: Text(
               'Dookie Controls',
               style: TextStyle(

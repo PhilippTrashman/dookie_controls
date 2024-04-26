@@ -1,10 +1,13 @@
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'dart:convert';
 import 'dart:typed_data';
-import 'package:dookie_controls/dookie_notifier.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
 import 'package:dookie_controls/bluetooth_serial/select_bonded_device_page.dart';
+import 'package:dookie_controls/dookie_notifier.dart';
 import 'package:dookie_controls/imports.dart';
+
+import 'package:dookie_controls/ads.dart';
 
 class Connectionpage extends StatefulWidget {
   const Connectionpage({super.key});
@@ -15,14 +18,308 @@ class Connectionpage extends StatefulWidget {
 
 class _ConnectionpageState extends State<Connectionpage> {
   late DookieNotifier dookieNotifier;
+  late ColorScheme colorScheme;
   bool isConnecting = false;
   bool get isConnected => (connection?.isConnected ?? false);
   bool isDisconnecting = false;
   String serverName = '';
   BluetoothConnection? connection;
+
   @override
   Widget build(BuildContext context) {
     dookieNotifier = Provider.of<DookieNotifier>(context);
+    colorScheme = Theme.of(context).colorScheme;
+    return mainScreen();
+  }
+
+  Widget textDivider({required double height, required String header}) {
+    return SizedBox(
+      height: height,
+      child: Row(
+        children: [
+          Expanded(
+            child: Divider(
+              height: height,
+            ),
+          ),
+          const SizedBox(
+            width: 10,
+          ),
+          Text(
+            header,
+            style: TextStyle(
+              fontSize: 14,
+              color: colorScheme.onSecondaryContainer,
+            ),
+          ),
+          const SizedBox(
+            width: 10,
+          ),
+          Expanded(
+            child: Divider(
+              height: height,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget mainScreen() {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // double width = constraints.maxWidth;
+        double height = constraints.maxHeight;
+        bool vertical = height > 500;
+        return vertical ? verticalView(height) : horizontalView(height);
+      },
+    );
+  }
+
+  Widget verticalBanner({required bool shown}) {
+    if (!shown) {
+      return const SizedBox();
+    }
+    return const SingleChildScrollView(
+      child: Column(
+        children: [
+          Ads(verticalAd: true),
+          Ads(verticalAd: true),
+          Ads(verticalAd: true),
+        ],
+      ),
+    );
+  }
+
+  Widget horizontalView(double height) {
+    bool shown = dookieNotifier.selectedUser?.carBrand.id == 1;
+    return SizedBox(
+      height: height,
+      width: double.infinity,
+      child: Row(
+        children: [
+          Expanded(child: verticalBanner(shown: shown)),
+          const VerticalDivider(),
+          Expanded(
+              flex: 8,
+              child: Container(
+                color: colorScheme.secondaryContainer,
+              )),
+          const VerticalDivider(),
+          Expanded(child: verticalBanner(shown: shown)),
+        ],
+      ),
+    );
+  }
+
+  Column verticalView(double height) {
+    return Column(
+      children: [
+        if (dookieNotifier.selectedUser?.carBrand.id == 1)
+          const Expanded(
+            flex: 1,
+            child: Ads(
+              verticalAd: false,
+            ),
+          ),
+        Divider(
+          height: height * 0.01,
+        ),
+        Expanded(
+          flex: 8,
+          child: SingleChildScrollView(
+            child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  children: [
+                    buttonChild(
+                      height: height * 0.1,
+                      leftChild: Container(
+                          height: height * 0.1,
+                          color: Colors.amber,
+                          child: const Text(
+                            'Joy Stick View',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                            ),
+                            textAlign: TextAlign.center,
+                          )),
+                    ),
+                    textDivider(
+                      height: height * 0.05,
+                      header: 'Controller',
+                    ),
+                    controllerView(
+                      height: height * 0.3,
+                    ),
+                    textDivider(
+                        height: height * 0.05, header: 'Connection Status'),
+                    buttonChild(
+                      height: height * 0.2,
+                      leftChild: Container(
+                        color: Colors.red,
+                      ),
+                      // rightChild: Container(
+                      //   color: Colors.blue,
+                      // ),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    buttonChild(
+                      height: height * 0.1,
+                      leftChild: Container(
+                        color: Colors.amber,
+                      ),
+                      rightChild: Container(
+                        color: Colors.blue,
+                      ),
+                    )
+                  ],
+                )),
+          ),
+        ),
+        Divider(
+          height: height * 0.01,
+        ),
+        if (dookieNotifier.selectedUser?.carBrand.id == 1)
+          const Expanded(
+            flex: 1,
+            child: Ads(
+              verticalAd: false,
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget controllerView({required double height}) {
+    return SizedBox(
+      height: height,
+      child: Column(
+        children: [
+          Expanded(
+            flex: 2,
+            child: Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                Expanded(
+                  child: Container(
+                    color: Colors.transparent,
+                  ),
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                Expanded(
+                  child: Container(
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const Expanded(flex: 1, child: SizedBox()),
+          Expanded(
+            flex: 3,
+            child: Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                Expanded(
+                  child: Container(
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                Expanded(
+                  child: Container(
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const Expanded(flex: 1, child: SizedBox()),
+          Expanded(
+            flex: 3,
+            child: Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                Expanded(
+                  child: Container(
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                Expanded(
+                  child: Container(
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget buttonChild({
+    required double height,
+    Widget? leftChild,
+    Widget? rightChild,
+  }) {
+    bool showSeperator = rightChild != null && leftChild != null;
+
+    return SizedBox(
+      width: double.infinity,
+      height: height,
+      child: Row(
+        children: [
+          if (leftChild != null)
+            Expanded(
+              child: leftChild,
+            ),
+          if (showSeperator)
+            const SizedBox(
+              width: 10,
+            ),
+          if (rightChild != null)
+            Expanded(
+              child: rightChild,
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget workingConnection() {
     return Column(
       children: [
         Text(
@@ -151,5 +448,3 @@ class _ConnectionpageState extends State<Connectionpage> {
 }
 
 // Path: lib/bluetooth_serial/SelectBondedDevicePage.dart
-
-
