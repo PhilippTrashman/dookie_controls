@@ -26,9 +26,11 @@ class Dookie3DViewer extends StatefulWidget {
 
 class _Dookie3DViewerState extends State<Dookie3DViewer> {
   O3DController controller = O3DController();
+  late ColorScheme colorScheme;
 
   @override
   Widget build(BuildContext context) {
+    colorScheme = Theme.of(context).colorScheme;
     return Column(
       children: [
         Expanded(
@@ -47,6 +49,31 @@ class _Dookie3DViewerState extends State<Dookie3DViewer> {
           child: O3D.asset(
             src: 'assets/models/dingus_cat.glb',
             controller: controller,
+          ),
+        ),
+        Expanded(
+          child: DraggableScrollableSheet(
+            initialChildSize: 0.5, // Adjust this as needed
+            minChildSize: 0.5, // Adjust this as needed
+            maxChildSize: 1, // Adjust this as needed
+            builder: (BuildContext context, ScrollController scrollController) {
+              return Container(
+                color: colorScheme.secondaryContainer,
+                child: ListView(
+                  controller: scrollController,
+                  children: [
+                    IconButton(
+                      onPressed: () => controller.cameraOrbit(-25, 90, 50),
+                      icon: const Icon(Icons.change_circle),
+                    ),
+                    IconButton(
+                      onPressed: () => controller.cameraTarget(0, 0, 0),
+                      icon: const Icon(Icons.change_circle_outlined),
+                    ),
+                  ],
+                ),
+              );
+            },
           ),
         ),
       ],
