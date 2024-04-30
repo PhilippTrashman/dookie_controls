@@ -55,6 +55,12 @@ class DookieNotifier extends ChangeNotifier {
   Map<int, User> users = {};
 
   BluetoothDevice? connectedDevice;
+  BluetoothConnection? connection;
+  bool isConnecting = false;
+  bool get isConnected => (connection?.isConnected ?? false);
+  bool isDisconnecting = false;
+  String serverName = '';
+
   JsonDatabase jsonDatabase = JsonDatabase();
 
   Future<String> readUsers() async {

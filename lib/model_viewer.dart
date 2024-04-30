@@ -27,56 +27,89 @@ class Dookie3DViewer extends StatefulWidget {
 class _Dookie3DViewerState extends State<Dookie3DViewer> {
   O3DController controller = O3DController();
   late ColorScheme colorScheme;
+  double extend = 0;
 
   @override
   Widget build(BuildContext context) {
     colorScheme = Theme.of(context).colorScheme;
-    return Column(
+    return Stack(
       children: [
-        Expanded(
-            child: Row(
+        Column(
           children: [
-            IconButton(
-                onPressed: () => controller.cameraOrbit(-25, 90, 50),
-                icon: const Icon(Icons.change_circle)),
-            IconButton(
-                onPressed: () => controller.cameraTarget(0, 0, 0),
-                icon: const Icon(Icons.change_circle_outlined)),
+            Expanded(
+                child: Row(
+              children: [
+                IconButton(
+                    onPressed: () => controller.cameraOrbit(-25, 90, 50),
+                    icon: const Icon(Icons.change_circle)),
+                IconButton(
+                    onPressed: () => controller.cameraTarget(0, 0, 0),
+                    icon: const Icon(Icons.change_circle_outlined)),
+              ],
+            )),
+            Expanded(
+              flex: 7,
+              child: O3D.asset(
+                src: 'assets/models/dingus_cat.glb',
+                controller: controller,
+              ),
+            ),
+            Expanded(
+              child: Container(
+                color: colorScheme.secondaryContainer,
+              ),
+            ),
           ],
-        )),
-        Expanded(
-          flex: 5,
-          child: O3D.asset(
-            src: 'assets/models/dingus_cat.glb',
-            controller: controller,
+        ),
+        IgnorePointer(
+          child: Container(
+            color: Colors.black.withOpacity(extend),
           ),
         ),
-        Expanded(
-          child: DraggableScrollableSheet(
-            initialChildSize: 0.5, // Adjust this as needed
-            minChildSize: 0.5, // Adjust this as needed
-            maxChildSize: 1, // Adjust this as needed
-            builder: (BuildContext context, ScrollController scrollController) {
-              return Container(
-                color: colorScheme.secondaryContainer,
-                child: ListView(
-                  controller: scrollController,
-                  children: [
-                    IconButton(
-                      onPressed: () => controller.cameraOrbit(-25, 90, 50),
-                      icon: const Icon(Icons.change_circle),
-                    ),
-                    IconButton(
-                      onPressed: () => controller.cameraTarget(0, 0, 0),
-                      icon: const Icon(Icons.change_circle_outlined),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
+        NotificationListener<DraggableScrollableNotification>(
+          onNotification: (notification) {
+            if (notification.extent > 0.11) {
+              if (notification.extent < 0.7) {
+                setState(() {
+                  extend = notification.extent;
+                });
+              }
+            } else {
+              setState(() {
+                extend = 0;
+              });
+            }
+            return false;
+          },
+          child: skinShop(),
         ),
       ],
+    );
+  }
+
+  DraggableScrollableSheet skinShop() {
+    return DraggableScrollableSheet(
+      initialChildSize: 0.11, // Adjust this as needed
+      minChildSize: 0.11, // Adjust this as needed
+      maxChildSize: 0.8, // Adjust this as needed
+      builder: (BuildContext context, ScrollController scrollController) {
+        return Container(
+          color: colorScheme.secondaryContainer,
+          child: ListView(
+            controller: scrollController,
+            children: [
+              IconButton(
+                onPressed: () => controller.cameraOrbit(-25, 90, 50),
+                icon: const Icon(Icons.change_circle),
+              ),
+              IconButton(
+                onPressed: () => controller.cameraTarget(0, 0, 0),
+                icon: const Icon(Icons.change_circle_outlined),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

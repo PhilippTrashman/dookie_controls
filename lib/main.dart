@@ -411,15 +411,15 @@ class _MainPageState extends State<MainPage> {
   late ColorScheme colorScheme;
   User? selectedUser;
   List users = [];
-  late DookieNotifier dookieNotifier;
+  late DookieNotifier dn;
   bool timerStarted = false;
 
   var selectedPage = 0;
   @override
   Widget build(BuildContext context) {
-    dookieNotifier = Provider.of<DookieNotifier>(context);
-    if (!dookieNotifier.isTimerRunning && !timerStarted) {
-      dookieNotifier.startTimer();
+    dn = Provider.of<DookieNotifier>(context);
+    if (!dn.isTimerRunning && !timerStarted) {
+      dn.startTimer();
       timerStarted = true;
     }
     Widget page;
@@ -453,7 +453,7 @@ class _MainPageState extends State<MainPage> {
       onPopInvoked: (didPop) {
         debugPrint('Popped Main Screen');
         if (!didPop) {
-          dookieNotifier.logout();
+          dn.logout();
         }
       },
       child: Stack(
@@ -477,14 +477,31 @@ class _MainPageState extends State<MainPage> {
                   ),
                 ),
                 actions: [
-                  IconButton(
-                    onPressed: () {
-                      dookieNotifier.logout();
-                    },
-                    icon: Icon(
-                      Icons.logout,
-                      color: colorScheme.primary,
-                    ),
+                  Row(
+                    children: [
+                      Container(
+                        height: 6,
+                        width: 6,
+                        padding: const EdgeInsets.all(8.0),
+                        decoration: BoxDecoration(
+                          color: dn.isConnected
+                              ? Colors.green
+                              : dn.isConnecting
+                                  ? Colors.yellow
+                                  : Colors.red,
+                          borderRadius: BorderRadius.circular(500),
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          dn.logout();
+                        },
+                        icon: Icon(
+                          Icons.logout,
+                          color: colorScheme.primary,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

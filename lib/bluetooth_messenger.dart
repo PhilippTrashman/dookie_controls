@@ -17,18 +17,17 @@ class Connectionpage extends StatefulWidget {
 }
 
 class _ConnectionpageState extends State<Connectionpage> {
-  late DookieNotifier dookieNotifier;
+  late DookieNotifier dn;
   late ColorScheme colorScheme;
-  bool isConnecting = false;
-  bool get isConnected => (connection?.isConnected ?? false);
-  bool isDisconnecting = false;
-  String serverName = '';
-  BluetoothConnection? connection;
+
+  double pi = 3.14159265359;
+  late bool turnDisabled;
 
   @override
   Widget build(BuildContext context) {
-    dookieNotifier = Provider.of<DookieNotifier>(context);
+    dn = Provider.of<DookieNotifier>(context);
     colorScheme = Theme.of(context).colorScheme;
+    turnDisabled = dn.selectedUser?.carBrand.id == 2;
     return mainScreen();
   }
 
@@ -92,7 +91,7 @@ class _ConnectionpageState extends State<Connectionpage> {
   }
 
   Widget horizontalView(double height) {
-    bool shown = dookieNotifier.selectedUser?.carBrand.id == 1;
+    bool shown = dn.selectedUser?.carBrand.id == 1;
     return SizedBox(
       height: height,
       width: double.infinity,
@@ -115,7 +114,7 @@ class _ConnectionpageState extends State<Connectionpage> {
   Column verticalView(double height) {
     return Column(
       children: [
-        if (dookieNotifier.selectedUser?.carBrand.id == 1)
+        if (dn.selectedUser?.carBrand.id == 1)
           const Expanded(
             flex: 1,
             child: Ads(
@@ -183,7 +182,7 @@ class _ConnectionpageState extends State<Connectionpage> {
         Divider(
           height: height * 0.01,
         ),
-        if (dookieNotifier.selectedUser?.carBrand.id == 1)
+        if (dn.selectedUser?.carBrand.id == 1)
           const Expanded(
             flex: 1,
             child: Ads(
@@ -199,29 +198,91 @@ class _ConnectionpageState extends State<Connectionpage> {
       height: height,
       child: Column(
         children: [
+          if (turnDisabled) const Expanded(flex: 2, child: SizedBox()),
+          if (!turnDisabled)
+            Expanded(
+              flex: 2,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: SizedBox.expand(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          debugPrint('indicator-left');
+                        },
+                        child: const Icon(Icons.arrow_back_ios),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  Expanded(
+                    child: Container(
+                      color: Colors.transparent,
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  Expanded(
+                    child: SizedBox.expand(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          debugPrint('indicator-right');
+                        },
+                        child: const Icon(Icons.arrow_forward_ios),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          const Expanded(flex: 1, child: SizedBox()),
           Expanded(
-            flex: 2,
+            flex: 3,
             child: Row(
               children: [
                 Expanded(
-                  child: Container(
-                    color: Colors.white,
+                  child: SizedBox.expand(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        debugPrint('up-left');
+                      },
+                      child: Transform.rotate(
+                        angle: 315 * pi / 180, // Convert degrees to radians
+                        child: const Icon(Icons.arrow_upward),
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(
                   width: 10,
                 ),
                 Expanded(
-                  child: Container(
-                    color: Colors.transparent,
+                  child: SizedBox.expand(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        debugPrint('up-null');
+                      },
+                      child: const Icon(Icons.arrow_upward),
+                    ),
                   ),
                 ),
                 const SizedBox(
                   width: 10,
                 ),
                 Expanded(
-                  child: Container(
-                    color: Colors.white,
+                  child: SizedBox.expand(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        debugPrint('up-right');
+                      },
+                      child: Transform.rotate(
+                        angle: 45 * pi / 180, // Convert degrees to radians
+                        child: const Icon(Icons.arrow_upward),
+                      ),
+                    ),
                   ),
                 ),
               ],
@@ -233,53 +294,45 @@ class _ConnectionpageState extends State<Connectionpage> {
             child: Row(
               children: [
                 Expanded(
-                  child: Container(
-                    color: Colors.white,
+                  child: SizedBox.expand(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        debugPrint('down-left');
+                      },
+                      child: Transform.rotate(
+                        angle: 225 * pi / 180, // Convert degrees to radians
+                        child: const Icon(Icons.arrow_upward),
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(
                   width: 10,
                 ),
                 Expanded(
-                  child: Container(
-                    color: Colors.white,
+                  child: SizedBox.expand(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        debugPrint('down-null');
+                      },
+                      child: const Icon(Icons.arrow_downward),
+                    ),
                   ),
                 ),
                 const SizedBox(
                   width: 10,
                 ),
                 Expanded(
-                  child: Container(
-                    color: Colors.white,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const Expanded(flex: 1, child: SizedBox()),
-          Expanded(
-            flex: 3,
-            child: Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                Expanded(
-                  child: Container(
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                Expanded(
-                  child: Container(
-                    color: Colors.white,
+                  child: SizedBox.expand(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        debugPrint('down-right');
+                      },
+                      child: Transform.rotate(
+                        angle: 135 * pi / 180, // Convert degrees to radians
+                        child: const Icon(Icons.arrow_upward),
+                      ),
+                    ),
                   ),
                 ),
               ],
@@ -323,9 +376,9 @@ class _ConnectionpageState extends State<Connectionpage> {
     return Column(
       children: [
         Text(
-          isConnecting
+          dn.isConnecting
               ? 'Connecting...'
-              : isConnected
+              : dn.isConnected
                   ? 'Connected'
                   : 'Not Connected',
         ),
@@ -389,8 +442,8 @@ class _ConnectionpageState extends State<Connectionpage> {
       return;
     } else {
       debugPrint('Device selected: ${device.name}');
-      dookieNotifier.connectedDevice = device;
-      serverName = device.name ?? 'Unknown';
+      dn.connectedDevice = device;
+      dn.serverName = device.name ?? 'Unknown';
       setState(() {});
     }
 
@@ -398,12 +451,12 @@ class _ConnectionpageState extends State<Connectionpage> {
       debugPrint('Connected to the device');
       connection = connection;
       setState(() {
-        isConnecting = false;
-        isDisconnecting = false;
+        dn.isConnecting = false;
+        dn.isDisconnecting = false;
       });
 
       connection.input!.listen(_onDataReceived).onDone(() {
-        if (isDisconnecting) {
+        if (dn.isDisconnecting) {
           debugPrint('Disconnecting locally!');
         } else {
           debugPrint('Disconnected remotely!');
@@ -423,8 +476,8 @@ class _ConnectionpageState extends State<Connectionpage> {
 
     if (text.isNotEmpty) {
       try {
-        connection!.output.add(Uint8List.fromList(utf8.encode("$text\r\n")));
-        await connection!.output.allSent;
+        dn.connection!.output.add(Uint8List.fromList(utf8.encode("$text\r\n")));
+        await dn.connection!.output.allSent;
 
         debugPrint('Sent: $text');
       } catch (e) {
@@ -446,5 +499,3 @@ class _ConnectionpageState extends State<Connectionpage> {
     );
   }
 }
-
-// Path: lib/bluetooth_serial/SelectBondedDevicePage.dart
