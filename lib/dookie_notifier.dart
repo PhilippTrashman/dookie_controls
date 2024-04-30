@@ -3,6 +3,7 @@ import 'package:dookie_controls/imports.dart';
 import 'package:dookie_controls/database.dart';
 import 'dart:async';
 import 'dart:math';
+import 'dart:typed_data';
 
 DookieSave dookieBaseSave(int userId) {
   return DookieSave(
@@ -117,6 +118,12 @@ class DookieNotifier extends ChangeNotifier {
   void logout() {
     saveUser();
     selectedUser = null;
+    isConnected ? connection?.finish() : null;
+    isConnecting = false;
+    isDisconnecting = false;
+    connectedDevice = null;
+    connection = null;
+    serverName = '';
     stopTimer();
     notifyListeners();
   }
@@ -143,5 +150,83 @@ class DookieNotifier extends ChangeNotifier {
 
   void saveUsers() {
     writeUsers();
+  }
+
+  void removeUser(int userId) {
+    users.remove(userId);
+    writeUsers();
+    notifyListeners();
+  }
+
+  void _onDataReceived(Uint8List data) {
+    // Allocate buffer for parsed data
+    int backspacesCounter = 0;
+    for (var byte in data) {
+      if (byte == 8 || byte == 127) {
+        backspacesCounter++;
+      }
+    }
+    Uint8List buffer = Uint8List(data.length - backspacesCounter);
+    int bufferIndex = buffer.length;
+
+    // Apply backspace control character
+    backspacesCounter = 0;
+    for (int i = data.length - 1; i >= 0; i--) {
+      if (data[i] == 8 || data[i] == 127) {
+        backspacesCounter++;
+      } else {
+        if (backspacesCounter > 0) {
+          backspacesCounter--;
+        } else {
+          buffer[--bufferIndex] = data[i];
+        }
+      }
+    }
+
+    int index = buffer.indexOf(13);
+    if (~index != 0) {
+    } else {}
+  }
+
+  void connectToDevice(BluetoothDevice device) async {
+    if (device == connectedDevice) {
+      return;
+    }
+    connectedDevice = device;
+    serverName = device.name ?? "Unknown";
+
+    BluetoothConnection.toAddress(device.address).then((connection) {
+      debugPrint('Connected to the device');
+      this.connection = connection;
+      isConnecting = false;
+      isDisconnecting = false;
+
+      connection.input!.listen(_onDataReceived).onDone(() {
+        if (isDisconnecting) {
+          debugPrint('Disconnecting locally!');
+        } else {
+          debugPrint('Disconnected remotely!');
+        }
+      });
+    }).catchError((error) {
+      debugPrint('Cannot connect, exception occured');
+      debugPrint(error);
+    });
+
+    notifyListeners();
+  }
+
+  void disconnectFromDevice() {
+    if (isConnecting) {
+      isConnecting = false;
+      connection?.finish();
+      connectedDevice = null;
+      notifyListeners();
+      return;
+    }
+    isDisconnecting = true;
+    connection?.finish();
+    connectedDevice = null;
+    notifyListeners();
   }
 }

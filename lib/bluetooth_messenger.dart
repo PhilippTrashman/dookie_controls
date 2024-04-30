@@ -131,18 +131,21 @@ class _ConnectionpageState extends State<Connectionpage> {
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
                   children: [
-                    buttonChild(
+                    SizedBox(
                       height: height * 0.1,
-                      leftChild: Container(
-                          height: height * 0.1,
-                          color: Colors.amber,
+                      width: double.infinity,
+                      child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          )),
+                          onPressed: () {
+                            if (dn.isConnected) {
+                              debugPrint('Joystick View');
+                            }
+                          },
                           child: const Text(
-                            'Joy Stick View',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                            ),
-                            textAlign: TextAlign.center,
+                            'Joystick View',
                           )),
                     ),
                     textDivider(
@@ -154,27 +157,45 @@ class _ConnectionpageState extends State<Connectionpage> {
                     ),
                     textDivider(
                         height: height * 0.05, header: 'Connection Status'),
-                    buttonChild(
-                      height: height * 0.2,
-                      leftChild: Container(
-                        color: Colors.red,
-                      ),
-                      // rightChild: Container(
-                      //   color: Colors.blue,
-                      // ),
-                    ),
+                    // buttonChild(
+                    //   height: height * 0.2,
+                    //   leftChild: Container(
+                    //     decoration: BoxDecoration(
+                    //       borderRadius: BorderRadius.circular(10),
+                    //       border: Border.all(
+                    //         color: colorScheme.secondaryContainer,
+                    //         width: 2,
+                    //       ),
+                    //     ),
+                    //     child: workingConnection(),
+                    //   ),
+                    //   // rightChild: Container(
+                    //   //   color: Colors.blue,
+                    //   // ),
+                    // ),
                     const SizedBox(
                       height: 10,
                     ),
-                    buttonChild(
+                    SizedBox(
                       height: height * 0.1,
-                      leftChild: Container(
-                        color: Colors.amber,
-                      ),
-                      rightChild: Container(
-                        color: Colors.blue,
-                      ),
-                    )
+                      width: double.infinity,
+                      child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          )),
+                          onPressed: () {
+                            // connectToDevice();
+                            if (dn.isConnected) {
+                              dn.disconnectFromDevice();
+                            } else {
+                              connectToDevice();
+                            }
+                          },
+                          child: Text(
+                            dn.isConnected ? 'Disconnect' : 'Connect',
+                          )),
+                    ),
                   ],
                 )),
           ),
@@ -208,7 +229,7 @@ class _ConnectionpageState extends State<Connectionpage> {
                     child: SizedBox.expand(
                       child: ElevatedButton(
                         onPressed: () {
-                          debugPrint('indicator-left');
+                          sendMessage('indicator-left');
                         },
                         child: const Icon(Icons.arrow_back_ios),
                       ),
@@ -229,7 +250,7 @@ class _ConnectionpageState extends State<Connectionpage> {
                     child: SizedBox.expand(
                       child: ElevatedButton(
                         onPressed: () {
-                          debugPrint('indicator-right');
+                          sendMessage('indicator-right');
                         },
                         child: const Icon(Icons.arrow_forward_ios),
                       ),
@@ -247,7 +268,7 @@ class _ConnectionpageState extends State<Connectionpage> {
                   child: SizedBox.expand(
                     child: ElevatedButton(
                       onPressed: () {
-                        debugPrint('up-left');
+                        sendMessage('up-left');
                       },
                       child: Transform.rotate(
                         angle: 315 * pi / 180, // Convert degrees to radians
@@ -263,7 +284,7 @@ class _ConnectionpageState extends State<Connectionpage> {
                   child: SizedBox.expand(
                     child: ElevatedButton(
                       onPressed: () {
-                        debugPrint('up-null');
+                        sendMessage('up-null');
                       },
                       child: const Icon(Icons.arrow_upward),
                     ),
@@ -276,7 +297,7 @@ class _ConnectionpageState extends State<Connectionpage> {
                   child: SizedBox.expand(
                     child: ElevatedButton(
                       onPressed: () {
-                        debugPrint('up-right');
+                        sendMessage('up-right');
                       },
                       child: Transform.rotate(
                         angle: 45 * pi / 180, // Convert degrees to radians
@@ -297,7 +318,7 @@ class _ConnectionpageState extends State<Connectionpage> {
                   child: SizedBox.expand(
                     child: ElevatedButton(
                       onPressed: () {
-                        debugPrint('down-left');
+                        sendMessage('down-left');
                       },
                       child: Transform.rotate(
                         angle: 225 * pi / 180, // Convert degrees to radians
@@ -313,7 +334,7 @@ class _ConnectionpageState extends State<Connectionpage> {
                   child: SizedBox.expand(
                     child: ElevatedButton(
                       onPressed: () {
-                        debugPrint('down-null');
+                        sendMessage('down-null');
                       },
                       child: const Icon(Icons.arrow_downward),
                     ),
@@ -326,7 +347,7 @@ class _ConnectionpageState extends State<Connectionpage> {
                   child: SizedBox.expand(
                     child: ElevatedButton(
                       onPressed: () {
-                        debugPrint('down-right');
+                        sendMessage('down-right');
                       },
                       child: Transform.rotate(
                         angle: 135 * pi / 180, // Convert degrees to radians
@@ -382,17 +403,17 @@ class _ConnectionpageState extends State<Connectionpage> {
                   ? 'Connected'
                   : 'Not Connected',
         ),
-        connectionButton(),
-        ElevatedButton(
-          onPressed: connectToDevice,
-          child: const Text('Connect to Device'),
-        ),
-        ElevatedButton(
-          onPressed: () {
-            sendMessage('Hello');
-          },
-          child: const Text('Send Message'),
-        )
+        // connectionButton(),
+        // ElevatedButton(
+        //   onPressed: connectToDevice,
+        //   child: const Text('Connect to Device'),
+        // ),
+        // ElevatedButton(
+        //   onPressed: () {
+        //     sendMessage('Hello');
+        //   },
+        //   child: const Text('Send Message'),
+        // )
       ],
     );
   }
@@ -441,34 +462,35 @@ class _ConnectionpageState extends State<Connectionpage> {
       debugPrint('No device selected');
       return;
     } else {
-      debugPrint('Device selected: ${device.name}');
-      dn.connectedDevice = device;
-      dn.serverName = device.name ?? 'Unknown';
-      setState(() {});
+      // debugPrint('Device selected: ${device.name}');
+      // dn.connectedDevice = device;
+      // dn.serverName = device.name ?? 'Unknown';
+      // setState(() {});
+      dn.connectToDevice(device);
     }
 
-    BluetoothConnection.toAddress(device.address).then((connection) {
-      debugPrint('Connected to the device');
-      connection = connection;
-      setState(() {
-        dn.isConnecting = false;
-        dn.isDisconnecting = false;
-      });
+    // BluetoothConnection.toAddress(device.address).then((connection) {
+    //   debugPrint('Connected to the device');
+    //   connection = connection;
+    //   setState(() {
+    //     dn.isConnecting = false;
+    //     dn.isDisconnecting = false;
+    //   });
 
-      connection.input!.listen(_onDataReceived).onDone(() {
-        if (dn.isDisconnecting) {
-          debugPrint('Disconnecting locally!');
-        } else {
-          debugPrint('Disconnected remotely!');
-        }
-        if (mounted) {
-          setState(() {});
-        }
-      });
-    }).catchError((error) {
-      debugPrint('Cannot connect, exception occured');
-      debugPrint(error);
-    });
+    //   connection.input!.listen(_onDataReceived).onDone(() {
+    //     if (dn.isDisconnecting) {
+    //       debugPrint('Disconnecting locally!');
+    //     } else {
+    //       debugPrint('Disconnected remotely!');
+    //     }
+    //     if (mounted) {
+    //       setState(() {});
+    //     }
+    //   });
+    // }).catchError((error) {
+    //   debugPrint('Cannot connect, exception occured');
+    //   debugPrint(error);
+    // });
   }
 
   void sendMessage(String message) async {

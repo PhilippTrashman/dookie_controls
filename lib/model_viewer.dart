@@ -71,7 +71,11 @@ class _Dookie3DViewerState extends State<Dookie3DViewer> {
             if (notification.extent > 0.11) {
               if (notification.extent < 0.7) {
                 setState(() {
-                  extend = notification.extent;
+                  if (notification.extent > 0.2) {
+                    extend = notification.extent - 0.2;
+                  } else {
+                    extend = 0;
+                  }
                 });
               }
             } else {
