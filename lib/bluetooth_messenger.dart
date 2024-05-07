@@ -157,22 +157,6 @@ class _ConnectionpageState extends State<Connectionpage> {
                     ),
                     textDivider(
                         height: height * 0.05, header: 'Connection Status'),
-                    // buttonChild(
-                    //   height: height * 0.2,
-                    //   leftChild: Container(
-                    //     decoration: BoxDecoration(
-                    //       borderRadius: BorderRadius.circular(10),
-                    //       border: Border.all(
-                    //         color: colorScheme.secondaryContainer,
-                    //         width: 2,
-                    //       ),
-                    //     ),
-                    //     child: workingConnection(),
-                    //   ),
-                    //   // rightChild: Container(
-                    //   //   color: Colors.blue,
-                    //   // ),
-                    // ),
                     const SizedBox(
                       height: 10,
                     ),
@@ -211,6 +195,30 @@ class _ConnectionpageState extends State<Connectionpage> {
             ),
           ),
       ],
+    );
+  }
+
+  Widget controllerButton({
+    required String startMessage,
+    required String stopMessage,
+    double degrees = 0,
+  }) {
+    return SizedBox.expand(
+      child: Listener(
+        onPointerDown: (details) {
+          sendMessage(startMessage);
+        },
+        onPointerUp: (details) {
+          sendMessage(stopMessage);
+        },
+        child: ElevatedButton(
+          onPressed: () {},
+          child: Transform.rotate(
+            angle: degrees * pi / 180,
+            child: const Icon(Icons.arrow_upward),
+          ),
+        ),
+      ),
     );
   }
 
@@ -265,47 +273,28 @@ class _ConnectionpageState extends State<Connectionpage> {
             child: Row(
               children: [
                 Expanded(
-                  child: SizedBox.expand(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        sendMessage('up-left');
-                      },
-                      child: Transform.rotate(
-                        angle: 315 * pi / 180, // Convert degrees to radians
-                        child: const Icon(Icons.arrow_upward),
-                      ),
-                    ),
-                  ),
+                    child: controllerButton(
+                        startMessage: 'up-left',
+                        stopMessage: 'stop',
+                        degrees: 315)),
+                const SizedBox(
+                  width: 10,
+                ),
+                // Expanded(
+                Expanded(
+                  child: controllerButton(
+                      startMessage: 'up-null', stopMessage: 'stop'),
                 ),
                 const SizedBox(
                   width: 10,
                 ),
                 Expanded(
-                  child: SizedBox.expand(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        sendMessage('up-null');
-                      },
-                      child: const Icon(Icons.arrow_upward),
-                    ),
+                  child: controllerButton(
+                    startMessage: 'up-right',
+                    stopMessage: 'stop',
+                    degrees: 45,
                   ),
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                Expanded(
-                  child: SizedBox.expand(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        sendMessage('up-right');
-                      },
-                      child: Transform.rotate(
-                        angle: 45 * pi / 180, // Convert degrees to radians
-                        child: const Icon(Icons.arrow_upward),
-                      ),
-                    ),
-                  ),
-                ),
+                )
               ],
             ),
           ),
@@ -315,45 +304,30 @@ class _ConnectionpageState extends State<Connectionpage> {
             child: Row(
               children: [
                 Expanded(
-                  child: SizedBox.expand(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        sendMessage('down-left');
-                      },
-                      child: Transform.rotate(
-                        angle: 225 * pi / 180, // Convert degrees to radians
-                        child: const Icon(Icons.arrow_upward),
-                      ),
-                    ),
+                  child: controllerButton(
+                    startMessage: 'down-left',
+                    stopMessage: 'stop',
+                    degrees: 225,
                   ),
                 ),
                 const SizedBox(
                   width: 10,
                 ),
                 Expanded(
-                  child: SizedBox.expand(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        sendMessage('down-null');
-                      },
-                      child: const Icon(Icons.arrow_downward),
-                    ),
+                  child: controllerButton(
+                    startMessage: 'down-null',
+                    stopMessage: 'stop',
+                    degrees: 180,
                   ),
                 ),
                 const SizedBox(
                   width: 10,
                 ),
                 Expanded(
-                  child: SizedBox.expand(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        sendMessage('down-right');
-                      },
-                      child: Transform.rotate(
-                        angle: 135 * pi / 180, // Convert degrees to radians
-                        child: const Icon(Icons.arrow_upward),
-                      ),
-                    ),
+                  child: controllerButton(
+                    startMessage: 'down-right',
+                    stopMessage: 'stop',
+                    degrees: 135,
                   ),
                 ),
               ],
@@ -403,17 +377,6 @@ class _ConnectionpageState extends State<Connectionpage> {
                   ? 'Connected'
                   : 'Not Connected',
         ),
-        // connectionButton(),
-        // ElevatedButton(
-        //   onPressed: connectToDevice,
-        //   child: const Text('Connect to Device'),
-        // ),
-        // ElevatedButton(
-        //   onPressed: () {
-        //     sendMessage('Hello');
-        //   },
-        //   child: const Text('Send Message'),
-        // )
       ],
     );
   }

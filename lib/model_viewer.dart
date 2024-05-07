@@ -1,21 +1,61 @@
 import 'package:flutter/material.dart';
-// import 'package:model_viewer_plus/model_viewer_plus.dart';
 import 'package:o3d/o3d.dart';
+import 'package:flutter/services.dart' show rootBundle;
+import 'dart:convert';
 
-// class Dookie3DViewer extends StatelessWidget {
-//   const Dookie3DViewer({super.key});
+class SkinShopImage extends StatelessWidget {
+  final String imagePath;
+  final String? soundPath;
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return ModelViewer(
-//       src: 'assets/models/dingus_cat.glb',
-//       alt: 'A 3D model of an astronaut',
-//       ar: false,
-//       autoRotate: true,
-//       cameraControls: true,
-//     );
-//   }
-// }
+  const SkinShopImage({required this.imagePath, this.soundPath, super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Column(
+          children: [
+            Expanded(
+              flex: 5,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Image.asset(
+                  imagePath,
+                  fit: BoxFit.contain,
+                ),
+              ),
+            ),
+            Expanded(child: Text('Price: 1099 DC')),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+Future<List<SkinShopImage>> loadAssetImages() async {
+  final jsonString = await rootBundle.loadString('AssetManifest.json');
+  final Map<String, dynamic> manifestMap = json.decode(jsonString);
+
+  final imagePaths = manifestMap.keys
+      .where((String key) => key.contains('the_goon_folder/'))
+      .toList();
+
+  final images = imagePaths.map((path) {
+    String? soundPath;
+    if (path.contains('sata_andagi')) {
+      soundPath = 'assets/sounds/sata_andagi.mp3';
+    }
+
+    return SkinShopImage(imagePath: path, soundPath: soundPath);
+  }).toList();
+
+  return images;
+}
 
 class Dookie3DViewer extends StatefulWidget {
   const Dookie3DViewer({super.key});
@@ -99,18 +139,24 @@ class _Dookie3DViewerState extends State<Dookie3DViewer> {
       builder: (BuildContext context, ScrollController scrollController) {
         return Container(
           color: colorScheme.secondaryContainer,
-          child: ListView(
-            controller: scrollController,
-            children: [
-              IconButton(
-                onPressed: () => controller.cameraOrbit(-25, 90, 50),
-                icon: const Icon(Icons.change_circle),
-              ),
-              IconButton(
-                onPressed: () => controller.cameraTarget(0, 0, 0),
-                icon: const Icon(Icons.change_circle_outlined),
-              ),
-            ],
+          child: FutureBuilder<List<SkinShopImage>>(
+            future: loadAssetImages(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return GridView.builder(
+                  controller: scrollController,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 6,
+                  ),
+                  itemCount: snapshot.data!.length,
+                  itemBuilder: (context, index) {
+                    return snapshot.data![index];
+                  },
+                );
+              } else {
+                return const Center(child: CircularProgressIndicator());
+              }
+            },
           ),
         );
       },
