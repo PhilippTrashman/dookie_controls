@@ -1,0 +1,202 @@
+{
+    "2b": {
+        "price": 2400,
+        "filepath": "2b.jpeg"
+    },
+    "Aisaka": {
+        "price": 1099,
+        "filepath": "aisaka.jpeg"
+    },
+    "Akeno": {
+        "price": 1680,
+        "filepath": "akeno.jpeg"
+    },
+    "Albedo": {
+        "price": 1350,
+        "filepath": "albedo.jpeg"
+    },
+    "Aqua": {
+        "price": 540,
+        "filepath": "aqua.jpeg"
+    },
+    "Artorias": {
+        "price": 780,
+        "filepath": "artorias.jpeg"
+    },
+    "Astolfo": {
+        "price": 2400,
+        "filepath": "astolfo.jpg"
+    },
+    "Asuka": {
+        "price": 1680,
+        "filepath": "asuka.jpg"
+    },
+    "Asuna": {
+        "price": 1350,
+        "filepath": "asuna.jpeg"
+    },
+    "Bitch": {
+        "price": 320,
+        "filepath": "bitch.jpg"
+    },
+    "Chika": {
+        "price": 1350,
+        "filepath": "chika.jpg"
+    },
+    "Darkness": {
+        "price": 760,
+        "filepath": "darkness.jpg"
+    },
+    "Emilia": {
+        "price": 1350,
+        "filepath": "emilia.jpg"
+    },
+    "Erza": {
+        "price": 1350,
+        "filepath": "erza.jpeg"
+    },
+    "Esdeath": {
+        "price": 2150,
+        "filepath": "esdeath.jpeg"
+    },
+    "Go-Jo": {
+        "price": 3250,
+        "filepath": "go-jo.jpeg"
+    },
+    "Hachikuji": {
+        "price": 4530,
+        "filepath": "hachikuji.jpeg"
+    },
+    "Hatagi": {
+        "price": 1350,
+        "filepath": "hatagi.jpg"
+    },
+    "Hayasaka": {
+        "price": 1350,
+        "filepath": "hayasaka.jpeg"
+    },
+    "Hinata": {
+        "price": 1350,
+        "filepath": "hinata.jpeg"
+    },
+    "Holo Gaming": {
+        "price": 3250,
+        "filepath": "holo gaming.jpeg"
+    },
+    "Holo": {
+        "price": 1680,
+        "filepath": "holo.png"
+    },
+    "Kaguya": {
+        "price": 1680,
+        "filepath": "kaguya.jpeg"
+    },
+    "Kanna": {
+        "price": 4530,
+        "filepath": "kanna.jpg"
+    },
+    "Kurumi": {
+        "price": 1350,
+        "filepath": "kurumi.jpeg"
+    },
+    "Mai": {
+        "price": 1350,
+        "filepath": "mai.jpeg"
+    },
+    "Makise": {
+        "price": 1350,
+        "filepath": "makise.jpeg"
+    },
+    "Megumin": {
+        "price": 1350,
+        "filepath": "megumin.jpeg"
+    },
+    "Mikasa": {
+        "price": 1350,
+        "filepath": "mikasa.jpg"
+    },
+    "Momo": {
+        "price": 1680,
+        "filepath": "momo.jpeg"
+    },
+    "Nami": {
+        "price": 1350,
+        "filepath": "nami.jpg"
+    },
+    "Nezuko": {
+        "price": 4530,
+        "filepath": "nezuko.png"
+    },
+    "Nishimiya": {
+        "price": 1350,
+        "filepath": "nishimiya.jpg"
+    },
+    "Ochako": {
+        "price": 1350,
+        "filepath": "ochako.jpg"
+    },
+    "Oshino": {
+        "price": 4530,
+        "filepath": "oshino.jpg"
+    },
+    "Ram": {
+        "price": 950,
+        "filepath": "ram.jpeg"
+    },
+    "Raphtalia": {
+        "price": 1350,
+        "filepath": "raphtalia.jpg"
+    },
+    "Rem": {
+        "price": 1350,
+        "filepath": "rem.jpeg"
+    },
+    "Rias": {
+        "price": 1960,
+        "filepath": "rias.jpeg"
+    },
+    "Rin Tohsaka": {
+        "price": 1350,
+        "filepath": "rin tohsaka.jpg"
+    },
+    "Robin": {
+        "price": 1350,
+        "filepath": "robin.jpeg"
+    },
+    "Ryuko": {
+        "price": 1680,
+        "filepath": "ryuko.jpeg"
+    },
+    "Sata Andagi": {
+        "price": 0,
+        "filepath": "sata_andagi.jpg"
+    },
+    "Toga": {
+        "price": 1350,
+        "filepath": "toga.jpg"
+    },
+    "Tohru": {
+        "price": 1350,
+        "filepath": "tohru.jpeg"
+    },
+    "Tsuyu": {
+        "price": 1680,
+        "filepath": "tsuyu.jpg"
+    },
+    "Wiz": {
+        "price": 1680,
+        "filepath": "wiz.jpg"
+    },
+    "Yukino": {
+        "price": 1350,
+        "filepath": "yukino.jpg"
+    },
+    "Yuno": {
+        "price": 1350,
+        "filepath": "yuno.jpeg"
+    },
+    "Zero Two": {
+        "price": 2400,
+        "filepath": "zero two.jpg"
+    }
+}

@@ -3,11 +3,25 @@ import 'package:o3d/o3d.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'dart:convert';
 
-class SkinShopImage extends StatelessWidget {
+class SkinShopData {
+  final String name;
   final String imagePath;
   final String? soundPath;
+  final int price;
 
-  const SkinShopImage({required this.imagePath, this.soundPath, super.key});
+  const SkinShopData({
+    required this.name,
+    required this.imagePath,
+    this.soundPath,
+    required this.price,
+  });
+}
+
+class SkinShopImage extends StatelessWidget {
+  SkinShopData data;
+  Color borderColor;
+
+  SkinShopImage({required this.data, required this.borderColor, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -16,28 +30,54 @@ class SkinShopImage extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: borderColor,
+            width: 2,
+          ),
         ),
-        child: Column(
-          children: [
-            Expanded(
-              flex: 5,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Image.asset(
-                  imagePath,
-                  fit: BoxFit.contain,
-                ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: Stack(
+            children: [
+              Image.asset(
+                data.imagePath,
+                fit: BoxFit.fill,
               ),
-            ),
-            Expanded(child: Text('Price: 1099 DC')),
-          ],
+              Column(
+                children: [
+                  const Expanded(
+                    flex: 2,
+                    child: SizedBox(),
+                  ),
+                  Expanded(
+                    child: Container(
+                      color: Colors.black.withOpacity(0.5),
+                      child: SizedBox.expand(
+                        child: Column(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                data.name,
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                            Expanded(child: Text('${data.price} DC')),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-Future<List<SkinShopImage>> loadAssetImages() async {
+Future<List<SkinShopData>> loadAssetImages() async {
   final jsonString = await rootBundle.loadString('AssetManifest.json');
   final Map<String, dynamic> manifestMap = json.decode(jsonString);
 
@@ -45,13 +85,25 @@ Future<List<SkinShopImage>> loadAssetImages() async {
       .where((String key) => key.contains('the_goon_folder/'))
       .toList();
 
-  final images = imagePaths.map((path) {
+  const indexJsonPath = 'assets/the_goon_folder/goon_index.json';
+  final indexJsonString = await rootBundle.loadString(indexJsonPath);
+  final Map<String, dynamic> indexJson = json.decode(indexJsonString);
+  final images = indexJson.entries.map((entry) {
     String? soundPath;
+    String path = "assets/the_goon_folder/${entry.value['filepath']}";
+    String name = entry.key;
+    int price = entry.value["price"];
     if (path.contains('sata_andagi')) {
       soundPath = 'assets/sounds/sata_andagi.mp3';
     }
+    debugPrint('path: $path, name: $name, price: $price');
 
-    return SkinShopImage(imagePath: path, soundPath: soundPath);
+    return SkinShopData(
+      name: name,
+      imagePath: path,
+      soundPath: soundPath,
+      price: price,
+    );
   }).toList();
 
   return images;
@@ -139,18 +191,29 @@ class _Dookie3DViewerState extends State<Dookie3DViewer> {
       builder: (BuildContext context, ScrollController scrollController) {
         return Container(
           color: colorScheme.secondaryContainer,
-          child: FutureBuilder<List<SkinShopImage>>(
+          child: FutureBuilder<List<SkinShopData>>(
             future: loadAssetImages(),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
-                return GridView.builder(
-                  controller: scrollController,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 6,
-                  ),
-                  itemCount: snapshot.data!.length,
-                  itemBuilder: (context, index) {
-                    return snapshot.data![index];
+                return LayoutBuilder(
+                  builder: (context, constraints) {
+                    // Calculate the number of columns
+                    final crossAxisCount = constraints.maxWidth ~/
+                        125; // Adjust the divisor as needed
+
+                    return GridView.builder(
+                      controller: scrollController,
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: crossAxisCount,
+                      ),
+                      itemCount: snapshot.data!.length,
+                      itemBuilder: (context, index) {
+                        return SkinShopImage(
+                          data: snapshot.data![index],
+                          borderColor: colorScheme.onSecondary,
+                        );
+                      },
+                    );
                   },
                 );
               } else {
