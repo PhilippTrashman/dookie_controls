@@ -120,6 +120,13 @@ class _Dookie3DViewerState extends State<Dookie3DViewer> {
   O3DController controller = O3DController();
   late ColorScheme colorScheme;
   double extend = 0;
+  late Future<List<SkinShopData>> _skinShopDataFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _skinShopDataFuture = loadAssetImages();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -191,35 +198,51 @@ class _Dookie3DViewerState extends State<Dookie3DViewer> {
       builder: (BuildContext context, ScrollController scrollController) {
         return Container(
           color: colorScheme.secondaryContainer,
-          child: FutureBuilder<List<SkinShopData>>(
-            future: loadAssetImages(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return LayoutBuilder(
-                  builder: (context, constraints) {
-                    // Calculate the number of columns
-                    final crossAxisCount = constraints.maxWidth ~/
-                        125; // Adjust the divisor as needed
+          child: Column(
+            children: [
+              const SizedBox(
+                height: 50,
+                child: Center(
+                  child: Text(
+                    'The Goon Shop',
+                    style: TextStyle(fontSize: 20),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: FutureBuilder<List<SkinShopData>>(
+                  future: _skinShopDataFuture,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      return LayoutBuilder(
+                        builder: (context, constraints) {
+                          // Calculate the number of columns
+                          final crossAxisCount = constraints.maxWidth ~/
+                              125; // Adjust the divisor as needed
 
-                    return GridView.builder(
-                      controller: scrollController,
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: crossAxisCount,
-                      ),
-                      itemCount: snapshot.data!.length,
-                      itemBuilder: (context, index) {
-                        return SkinShopImage(
-                          data: snapshot.data![index],
-                          borderColor: colorScheme.onSecondary,
-                        );
-                      },
-                    );
+                          return GridView.builder(
+                            controller: scrollController,
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: crossAxisCount,
+                            ),
+                            itemCount: snapshot.data!.length,
+                            itemBuilder: (context, index) {
+                              return SkinShopImage(
+                                data: snapshot.data![index],
+                                borderColor: colorScheme.onSecondary,
+                              );
+                            },
+                          );
+                        },
+                      );
+                    } else {
+                      return const Center(child: CircularProgressIndicator());
+                    }
                   },
-                );
-              } else {
-                return const Center(child: CircularProgressIndicator());
-              }
-            },
+                ),
+              ),
+            ],
           ),
         );
       },
