@@ -53,3 +53,5 @@ flutter:
     - assets/brands/
     - assets/models/
     - assets/the_goon_folder/
+    - assets/the_goon_folder/icons/
+    - assets/the_goon_folder/banners/

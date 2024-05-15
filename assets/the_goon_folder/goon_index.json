@@ -1,202 +1,252 @@
 {
     "2b": {
-        "price": 2400,
+        "name": "2b",
+        "tier": "Legendary",
         "filepath": "2b.jpeg"
     },
-    "Aisaka": {
-        "price": 1099,
-        "filepath": "aisaka.jpeg"
+    "Ai Hayasaka": {
+        "name": "Ai Hayasaka",
+        "tier": "Common",
+        "filepath": "ai_hayasaka.jpeg"
     },
-    "Akeno": {
-        "price": 1680,
-        "filepath": "akeno.jpeg"
+    "Akeno Himejima": {
+        "name": "Akeno Himejima",
+        "tier": "Rare",
+        "filepath": "akeno_himejima.jpeg"
     },
     "Albedo": {
-        "price": 1350,
+        "name": "Albedo",
+        "tier": "Epic",
         "filepath": "albedo.jpeg"
     },
     "Aqua": {
-        "price": 540,
+        "name": "Aqua",
+        "tier": "Trash",
         "filepath": "aqua.jpeg"
     },
-    "Artorias": {
-        "price": 780,
-        "filepath": "artorias.jpeg"
+    "Artorias Pendragon": {
+        "name": "Artorias Pendragon",
+        "tier": "Uncommon",
+        "filepath": "artorias_pendragon.jpeg"
     },
     "Astolfo": {
-        "price": 2400,
-        "filepath": "astolfo.jpg"
+        "name": "Astolfo",
+        "tier": "Legendary",
+        "filepath": "astolfo.jpeg"
     },
     "Asuka": {
-        "price": 1680,
-        "filepath": "asuka.jpg"
+        "name": "Asuka",
+        "tier": "Godly",
+        "filepath": "asuka.jpeg"
     },
-    "Asuna": {
-        "price": 1350,
-        "filepath": "asuna.jpeg"
+    "Asuna Yuuki": {
+        "name": "Asuna Yuuki",
+        "tier": "Common",
+        "filepath": "asuna_yuuki.jpeg"
     },
     "Bitch": {
-        "price": 320,
-        "filepath": "bitch.jpg"
+        "name": "Bitch",
+        "tier": "Trash",
+        "filepath": "bitch.jpeg"
     },
-    "Chika": {
-        "price": 1350,
-        "filepath": "chika.jpg"
+    "Chika Fujiwara": {
+        "name": "Chika Fujiwara",
+        "tier": "Rare",
+        "filepath": "chika_fujiwara.jpeg"
     },
     "Darkness": {
-        "price": 760,
-        "filepath": "darkness.jpg"
+        "name": "Darkness",
+        "tier": "Uncommon",
+        "filepath": "darkness.jpeg"
     },
     "Emilia": {
-        "price": 1350,
-        "filepath": "emilia.jpg"
+        "name": "Emilia",
+        "tier": "Common",
+        "filepath": "emilia.jpeg"
     },
     "Erza": {
-        "price": 1350,
+        "name": "Erza",
+        "tier": "Rare",
         "filepath": "erza.jpeg"
     },
     "Esdeath": {
-        "price": 2150,
+        "name": "Esdeath",
+        "tier": "Epic",
         "filepath": "esdeath.jpeg"
     },
-    "Go-Jo": {
-        "price": 3250,
-        "filepath": "go-jo.jpeg"
+    "Go Jo": {
+        "name": "Go Jo",
+        "tier": "Godly",
+        "filepath": "go_jo.jpeg"
     },
-    "Hachikuji": {
-        "price": 4530,
-        "filepath": "hachikuji.jpeg"
+    "Himiko Toga": {
+        "name": "Himiko Toga",
+        "tier": "Common",
+        "filepath": "himiko_toga.jpeg"
     },
-    "Hatagi": {
-        "price": 1350,
-        "filepath": "hatagi.jpg"
+    "Hinata Hyuuga": {
+        "name": "Hinata Hyuuga",
+        "tier": "Common",
+        "filepath": "hinata_hyuuga.jpeg"
     },
-    "Hayasaka": {
-        "price": 1350,
-        "filepath": "hayasaka.jpeg"
-    },
-    "Hinata": {
-        "price": 1350,
-        "filepath": "hinata.jpeg"
-    },
-    "Holo Gaming": {
-        "price": 3250,
-        "filepath": "holo gaming.jpeg"
+    "Hitagi Senjougahara": {
+        "name": "Hitagi Senjougahara",
+        "tier": "Uncommon",
+        "filepath": "hitagi_senjougahara.jpeg"
     },
     "Holo": {
-        "price": 1680,
-        "filepath": "holo.png"
+        "name": "Holo",
+        "tier": "Mythical",
+        "filepath": "holo.jpeg"
     },
-    "Kaguya": {
-        "price": 1680,
-        "filepath": "kaguya.jpeg"
+    "Holo Gaming": {
+        "name": "Holo Gaming",
+        "tier": "GOATED",
+        "filepath": "holo_gaming.jpeg"
     },
-    "Kanna": {
-        "price": 4530,
-        "filepath": "kanna.jpg"
+    "Kaguya Shinomiya": {
+        "name": "Kaguya Shinomiya",
+        "tier": "Uncommon",
+        "filepath": "kaguya_shinomiya.jpeg"
     },
-    "Kurumi": {
-        "price": 1350,
-        "filepath": "kurumi.jpeg"
+    "Kanna Kamui": {
+        "name": "Kanna Kamui",
+        "tier": "Mythical",
+        "filepath": "kanna_kamui.jpeg"
     },
-    "Mai": {
-        "price": 1350,
-        "filepath": "mai.jpeg"
+    "Kurisu Makise": {
+        "name": "Kurisu Makise",
+        "tier": "Rare",
+        "filepath": "kurisu_makise.jpeg"
     },
-    "Makise": {
-        "price": 1350,
-        "filepath": "makise.jpeg"
+    "Kurumi Tokisaki": {
+        "name": "Kurumi Tokisaki",
+        "tier": "Uncommon",
+        "filepath": "kurumi_tokisaki.jpeg"
+    },
+    "Mai Sakurajima": {
+        "name": "Mai Sakurajima",
+        "tier": "Rare",
+        "filepath": "mai_sakurajima.jpeg"
+    },
+    "Mayoi Hachikuji": {
+        "name": "Mayoi Hachikuji",
+        "tier": "Mythical",
+        "filepath": "mayoi_hachikuji.jpeg"
     },
     "Megumin": {
-        "price": 1350,
+        "name": "Megumin",
+        "tier": "Mythical",
         "filepath": "megumin.jpeg"
     },
     "Mikasa": {
-        "price": 1350,
-        "filepath": "mikasa.jpg"
+        "name": "Mikasa",
+        "tier": "Godly",
+        "filepath": "mikasa.jpeg"
     },
-    "Momo": {
-        "price": 1680,
-        "filepath": "momo.jpeg"
+    "Momo Yaoyorozu": {
+        "name": "Momo Yaoyorozu",
+        "tier": "Uncommon",
+        "filepath": "momo_yaoyorozu.jpeg"
     },
     "Nami": {
-        "price": 1350,
-        "filepath": "nami.jpg"
+        "name": "Nami",
+        "tier": "Legendary",
+        "filepath": "nami.jpeg"
     },
     "Nezuko": {
-        "price": 4530,
-        "filepath": "nezuko.png"
+        "name": "Nezuko",
+        "tier": "Mythical",
+        "filepath": "nezuko.jpeg"
     },
-    "Nishimiya": {
-        "price": 1350,
-        "filepath": "nishimiya.jpg"
+    "Nico Robin": {
+        "name": "Nico Robin",
+        "tier": "Epic",
+        "filepath": "nico_robin.jpeg"
     },
-    "Ochako": {
-        "price": 1350,
-        "filepath": "ochako.jpg"
-    },
-    "Oshino": {
-        "price": 4530,
-        "filepath": "oshino.jpg"
+    "Ochaco Uraraka": {
+        "name": "Ochaco Uraraka",
+        "tier": "Rare",
+        "filepath": "ochaco_uraraka.jpeg"
     },
     "Ram": {
-        "price": 950,
+        "name": "Ram",
+        "tier": "Common",
         "filepath": "ram.jpeg"
     },
     "Raphtalia": {
-        "price": 1350,
-        "filepath": "raphtalia.jpg"
+        "name": "Raphtalia",
+        "tier": "Rare",
+        "filepath": "raphtalia.jpeg"
     },
     "Rem": {
-        "price": 1350,
+        "name": "Rem",
+        "tier": "Legendary",
         "filepath": "rem.jpeg"
     },
-    "Rias": {
-        "price": 1960,
-        "filepath": "rias.jpeg"
+    "Rias Gremory": {
+        "name": "Rias Gremory",
+        "tier": "Legendary",
+        "filepath": "rias_gremory.jpeg"
     },
     "Rin Tohsaka": {
-        "price": 1350,
-        "filepath": "rin tohsaka.jpg"
+        "name": "Rin Tohsaka",
+        "tier": "Epic",
+        "filepath": "rin_tohsaka.jpeg"
     },
-    "Robin": {
-        "price": 1350,
-        "filepath": "robin.jpeg"
-    },
-    "Ryuko": {
-        "price": 1680,
-        "filepath": "ryuko.jpeg"
+    "Ryuko Matoi": {
+        "name": "Ryuko Matoi",
+        "tier": "Epic",
+        "filepath": "ryuko_matoi.jpeg"
     },
     "Sata Andagi": {
-        "price": 0,
-        "filepath": "sata_andagi.jpg"
+        "name": "Sata Andagi",
+        "tier": "Free",
+        "filepath": "sata_andagi.jpeg"
     },
-    "Toga": {
-        "price": 1350,
-        "filepath": "toga.jpg"
+    "Shinobu Oshino": {
+        "name": "Shinobu Oshino",
+        "tier": "Mythical",
+        "filepath": "shinobu_oshino.jpeg"
+    },
+    "Shoko Nishimiya": {
+        "name": "Shoko Nishimiya",
+        "tier": "Uncommon",
+        "filepath": "shoko_nishimiya.jpeg"
+    },
+    "Taiga Aisaka": {
+        "name": "Taiga Aisaka",
+        "tier": "Common",
+        "filepath": "taiga_aisaka.jpeg"
     },
     "Tohru": {
-        "price": 1350,
+        "name": "Tohru",
+        "tier": "Rare",
         "filepath": "tohru.jpeg"
     },
     "Tsuyu": {
-        "price": 1680,
-        "filepath": "tsuyu.jpg"
+        "name": "Tsuyu",
+        "tier": "Epic",
+        "filepath": "tsuyu.jpeg"
     },
     "Wiz": {
-        "price": 1680,
-        "filepath": "wiz.jpg"
+        "name": "Wiz",
+        "tier": "Rare",
+        "filepath": "wiz.jpeg"
     },
-    "Yukino": {
-        "price": 1350,
-        "filepath": "yukino.jpg"
+    "Yukino Yukinoshita": {
+        "name": "Yukino Yukinoshita",
+        "tier": "Rare",
+        "filepath": "yukino_yukinoshita.jpeg"
     },
-    "Yuno": {
-        "price": 1350,
-        "filepath": "yuno.jpeg"
+    "Yuno Gasai": {
+        "name": "Yuno Gasai",
+        "tier": "Common",
+        "filepath": "yuno_gasai.jpeg"
     },
     "Zero Two": {
-        "price": 2400,
-        "filepath": "zero two.jpg"
+        "name": "Zero Two",
+        "tier": "Legendary",
+        "filepath": "zero_two.jpeg"
     }
 }

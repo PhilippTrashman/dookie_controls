@@ -430,7 +430,7 @@ class _MainPageState extends State<MainPage> {
         break;
       case 1:
         // Joystick view for controlling the car
-        page = const Placeholder(text: 'Joystick View');
+        page = const Placeholder(text: 'Skibidi Opener');
         break;
       case 2:
         // Dookie Clicker
@@ -563,7 +563,7 @@ class _MainPageState extends State<MainPage> {
               icon: Icons.home_outlined,
               iconSelected: Icons.home),
           menuButton(
-              title: "Joystick View",
+              title: "Skibidi Opener",
               index: 1,
               icon: Icons.sports_esports_outlined,
               iconSelected: Icons.sports_esports),
