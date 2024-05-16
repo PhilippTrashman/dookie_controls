@@ -128,14 +128,16 @@ if __name__ == '__main__':
     base = './assets/the_goon_folder'
     icon_folder = f'{base}/icons'
     banner_folder = f'{base}/banners'
-    complete = search_for_missing_banner(icon_folder, banner_folder)
-    # generate_index(folder_path)
+    portraits_folder = f'{base}/portraits'
+    complete = search_for_missing_banner(icon_folder, banner_folder) and search_for_missing_banner(icon_folder, portraits_folder)
+    
     if complete:
         convert_images_to_jpeg(
             icon_folder,
             aspect_ratio=1, 
             target_size=(255, 255))
         convert_images_to_jpeg(banner_folder,)
+        convert_images_to_jpeg(portraits_folder, aspect_ratio=9/16, target_size=(720, 1280))
 
         generate_index(icon_folder, base)
     else:

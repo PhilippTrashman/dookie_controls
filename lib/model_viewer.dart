@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:o3d/o3d.dart';
-import 'package:flutter/services.dart' show rootBundle;
 import 'dart:convert';
 
 int getPrice(String tier) {
@@ -10,23 +13,32 @@ int getPrice(String tier) {
     case 'Trash': // funny Waifu
       return 380;
     case 'Common': // Bad Waifu
-      return 100;
+      return 560;
     case 'Uncommon': // normal Waifu
-      return 150;
+      return 780;
     case 'Rare': // Subpar Waifu
-      return 200;
+      return 1280;
     case 'Epic': // Good Waifu
-      return 300;
+      return 1860;
     case 'Legendary': // True Waifu
-      return 400;
+      return 2440;
     case 'Mythical': // Loli
-      return 500;
+      return 2870;
     case 'Godly': // Spoiler
-      return 600;
+      return 3640;
     case 'GOATED': // Holo Gaming
-      return 1000;
+      return 4850;
     default:
       return 0;
+  }
+}
+
+String getBuyMessage(String tier, String name) {
+  switch (tier) {
+    case 'Free':
+      return 'This skin is brought to by the hit Game RAID: Shadow Legends';
+    default:
+      return 'To Unlock the $tier Skin of $name you only need to spend a measly ${getPrice(tier)} Dookie Points and then Enjoy your Favourite Waifu';
   }
 }
 
@@ -34,6 +46,7 @@ class SkinShopData {
   final String name;
   final String imagePath;
   final String bannerPath;
+  final String portraitPath;
   final String? soundPath;
   final String tier;
 
@@ -41,6 +54,7 @@ class SkinShopData {
     required this.name,
     required this.imagePath,
     required this.bannerPath,
+    required this.portraitPath,
     this.soundPath,
     required this.tier,
   });
@@ -49,17 +63,27 @@ class SkinShopData {
 class SkinShopImage extends StatelessWidget {
   final SkinShopData data;
   final Color borderColor;
+  final Color containerColor;
 
   const SkinShopImage(
-      {required this.data, required this.borderColor, super.key});
+      {required this.data,
+      required this.borderColor,
+      required this.containerColor,
+      super.key});
 
   @override
   Widget build(BuildContext context) {
+    if (Platform.isAndroid || Platform.isIOS) {
+      SystemChrome.setPreferredOrientations([
+        DeviceOrientation.portraitUp,
+        DeviceOrientation.portraitDown,
+      ]);
+    }
+
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: GestureDetector(
         onTap: () {
-          debugPrint(data.name);
           showDialog(
             context: context,
             builder: (context) {
@@ -118,29 +142,90 @@ class SkinShopImage extends StatelessWidget {
   }
 
   Widget purchasePopUp(BuildContext context) {
-    return AlertDialog(
-      title: Text(data.name),
-      content: Column(
+    return Dialog(
+      clipBehavior: Clip.antiAlias,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Stack(
+        alignment: Alignment.center,
         children: [
-          Image.asset(data.bannerPath),
-          Text('Price: ${getPrice(data.tier)}'),
+          Image.asset(
+            data.portraitPath,
+            fit: BoxFit.cover,
+            height: double.infinity,
+            width: double.infinity,
+            alignment: Alignment.center,
+          ),
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Expanded(
+                flex: 2,
+                child: SizedBox(),
+              ),
+              Expanded(child: buyMessage(context))
+            ],
+          ),
         ],
       ),
-      actions: [
-        TextButton(
-          onPressed: () {
-            debugPrint('Purchase');
-          },
-          child: const Text('Purchase'),
-        ),
-        TextButton(
-          onPressed: () {
-            debugPrint('Cancel');
-            Navigator.of(context).pop();
-          },
-          child: const Text('Cancel'),
-        ),
-      ],
+    );
+  }
+
+  Container buyMessage(BuildContext context) {
+    return Container(
+      color: Colors.black.withOpacity(0.5),
+      child: Column(
+        children: [
+          Text(
+            data.name,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Expanded(
+            flex: 3,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                getBuyMessage(data.tier, data.name),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Container(
+              color: Colors.black.withOpacity(0.5),
+              child: ButtonBar(
+                alignment: MainAxisAlignment.center,
+                children: [
+                  TextButton(
+                    onPressed: () async {
+                      final Uri url = Uri.parse("https://www.ea.com/de-de");
+                      if (!await launchUrl(url)) {
+                        throw Exception('Could not launch $url');
+                      }
+                    },
+                    child: const Text('Purchase'),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('Cancel'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -161,6 +246,8 @@ Future<List<SkinShopData>> loadAssetImages() async {
     String path = "assets/the_goon_folder/icons/${entry.value['filepath']}";
     String bannerPath =
         "assets/the_goon_folder/banners/${entry.value['filepath']}";
+    String portraitPath =
+        "assets/the_goon_folder/portraits/${entry.value['filepath']}";
     String name = entry.key;
     String tier = entry.value["tier"];
     if (path.contains('sata_andagi')) {
@@ -172,6 +259,7 @@ Future<List<SkinShopData>> loadAssetImages() async {
       name: name,
       imagePath: path,
       bannerPath: bannerPath,
+      portraitPath: portraitPath,
       soundPath: soundPath,
       tier: tier,
     );
@@ -332,6 +420,7 @@ class _Dookie3DViewerState extends State<Dookie3DViewer>
                             return SkinShopImage(
                               data: snapshot.data![index],
                               borderColor: colorScheme.onSecondary,
+                              containerColor: colorScheme.secondaryContainer,
                             );
                           },
                         ),
