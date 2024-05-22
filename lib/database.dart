@@ -16,34 +16,22 @@ class JsonDatabase {
       return value.path;
     });
     const databasePath = 'DoockieControls/database.json';
-    // var status = await Permission.storage.status;
-    // if (status == PermissionStatus.denied) {
-    //   await Permission.storage.request();
-    // }
     final folderDir = Directory('$basePath/$folderPath');
     if (!folderDir.existsSync()) {
       folderDir.createSync(recursive: true);
     }
     final databaseDir = Directory('$basePath/$databasePath');
 
-    // final resultDir = Directory('$documentsPath/$databasePath');
-
     return databaseDir.path;
   }
 
   void _writeJson({required Map data, required String path}) {
     final json = _encoder.convert(data);
-    // final compressed = GZipCodec().encode(utf8.encode(json));
-    // print('Writing to $path');
-    // File(path).writeAsBytesSync(compressed);
     File(path).writeAsStringSync(json);
   }
 
   Map _readJson({required String path}) {
     try {
-      // final compressed = File(path).readAsBytesSync();
-      // final json = utf8.decode(GZipCodec().decode(compressed));
-      // return _decoder.convert(json);
       final json = File(path).readAsStringSync();
       final data = jsonDecode(json);
       return data;
@@ -56,10 +44,6 @@ class JsonDatabase {
 
   Future<void> writeDatabase({required Map<int, User> data}) async {
     final path = await _localPath;
-    // var status = await Permission.storage.status;
-    // if (status == PermissionStatus.denied) {
-    //   await Permission.storage.request();
-    // }
     final users = <String, Map<String, dynamic>>{};
     for (final key in data.keys) {
       users[key.toString()] = data[key]!.toJson();

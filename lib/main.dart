@@ -9,6 +9,7 @@ import 'package:dookie_controls/dookie_clicker.dart';
 import 'dart:async';
 
 import 'package:dookie_controls/model_viewer.dart';
+import 'package:dookie_controls/skibidi_opener.dart';
 import 'package:dookie_controls/bluetooth_messenger.dart';
 
 void main() {
@@ -430,7 +431,7 @@ class _MainPageState extends State<MainPage> {
         break;
       case 1:
         // Joystick view for controlling the car
-        page = const Placeholder(text: 'Skibidi Opener');
+        page = const SkibidiOpener();
         break;
       case 2:
         // Dookie Clicker

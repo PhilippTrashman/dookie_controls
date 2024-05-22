@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:dookie_controls/imports.dart';
 import 'package:dookie_controls/database.dart';
+import 'package:dookie_controls/skin_shop/shop_data.dart';
+import 'package:flutter/services.dart';
 import 'dart:async';
 import 'dart:math';
-import 'dart:typed_data';
 
 DookieSave dookieBaseSave(int userId) {
   return DookieSave(
@@ -48,6 +49,7 @@ DookieSave dookieBaseSave(int userId) {
 
 class DookieNotifier extends ChangeNotifier {
   late ColorScheme colorScheme;
+  late Future<List<SkinShopData>> skinShopDataFuture;
   User? selectedUser;
 
   Timer? _dookieTimer;
