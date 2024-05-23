@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:dookie_controls/imports.dart';
 import 'package:dookie_controls/database.dart';
 import 'package:dookie_controls/skin_shop/shop_data.dart';
+import 'package:dookie_controls/models/gacha_save.dart';
 import 'package:flutter/services.dart';
 import 'dart:async';
 import 'dart:math';
@@ -145,7 +146,8 @@ class DookieNotifier extends ChangeNotifier {
         name: name,
         lastName: lastName,
         carBrand: carBrand,
-        dookieSave: dookieBaseSave(userId));
+        dookieSave: dookieBaseSave(userId),
+        gachaSave: GachaSave(id: userId, gachas: {}));
     writeUsers();
     notifyListeners();
   }

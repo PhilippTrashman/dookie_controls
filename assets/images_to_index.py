@@ -26,6 +26,7 @@ def generate_index(folder_path: str, save_location: str) -> None:
     else:
         existing_index = {}
 
+    max_id = max((value['id'] for value in existing_index.values()), default=0)
     for file_name in os.listdir(folder_path):
         base_name = os.path.splitext(file_name)[0]
         names = base_name.split('_')
@@ -35,13 +36,20 @@ def generate_index(folder_path: str, save_location: str) -> None:
         # Use the tier value from the existing index if it exists, otherwise use "basic"
         tier = existing_index.get(key, {}).get('tier', 'Common')
 
+        if key not in existing_index:
+            max_id += 1
+            obj_id = max_id
+        else:
+            obj_id = existing_index[key]['id']
+
         value = {
+            'id': obj_id,
             'name': key,
             'tier': tier,
             'filepath': file_name
         }
         file_dict[key] = value
-
+        
         # Add the name to the list of names for this tier
         if tier not in tier_dict:
             tier_dict[tier] = []
@@ -55,14 +63,17 @@ def generate_index(folder_path: str, save_location: str) -> None:
     with open(f'{save_location}/tier_index.json', 'w') as file:
         json.dump(tier_dict, file, indent=4)
 
-def search_for_missing_banner(icons: str, banners: str) -> bool:
+    
+    print('Index file generated successfully.')
+
+def search_for_missing_banner(icons: str, comparision: str, name: str = 'banner') -> bool:
     files1 = set(os.path.splitext(file)[0] for file in os.listdir(icons))
-    files2 = set(os.path.splitext(file)[0] for file in os.listdir(banners))
+    files2 = set(os.path.splitext(file)[0] for file in os.listdir(comparision))
 
     missing_files = files1.symmetric_difference(files2)
 
     if not missing_files:
-        print('All icons have a corresponding banner.')
+        print(f'All icons have a corresponding {name}.')
         return True
     
     missing_icons = []
@@ -79,7 +90,7 @@ def search_for_missing_banner(icons: str, banners: str) -> bool:
             print(icon)
 
     if missing_banners:
-        print('\nMissing banners:')
+        print(f'\nMissing {name}:')
         for banner in missing_banners:
             print(banner)
     
@@ -129,15 +140,18 @@ if __name__ == '__main__':
     icon_folder = f'{base}/icons'
     banner_folder = f'{base}/banners'
     portraits_folder = f'{base}/portraits'
-    complete = search_for_missing_banner(icon_folder, banner_folder) and search_for_missing_banner(icon_folder, portraits_folder)
+    complete = search_for_missing_banner(
+            icon_folder, banner_folder
+        ) and search_for_missing_banner(
+            icon_folder, portraits_folder, 'portrait')
     
     if complete:
-        convert_images_to_jpeg(
-            icon_folder,
-            aspect_ratio=1, 
-            target_size=(255, 255))
-        convert_images_to_jpeg(banner_folder,)
-        convert_images_to_jpeg(portraits_folder, aspect_ratio=9/16, target_size=(720, 1280))
+        # convert_images_to_jpeg(
+        #     icon_folder,
+        #     aspect_ratio=1, 
+        #     target_size=(255, 255))
+        # convert_images_to_jpeg(banner_folder,)
+        # convert_images_to_jpeg(portraits_folder, aspect_ratio=9/16, target_size=(720, 1280))
 
         generate_index(icon_folder, base)
     else:

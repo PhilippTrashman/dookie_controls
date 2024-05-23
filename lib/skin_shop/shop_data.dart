@@ -5,6 +5,7 @@ import 'dart:io';
 import 'dart:convert';
 
 class SkinShopData {
+  final int id;
   final String name;
   final String imagePath;
   final String bannerPath;
@@ -13,6 +14,7 @@ class SkinShopData {
   final String tier;
 
   const SkinShopData({
+    required this.id,
     required this.name,
     required this.imagePath,
     required this.bannerPath,
@@ -251,8 +253,10 @@ Future<List<SkinShopData>> loadAssetImages() async {
     if (path.contains('sata_andagi')) {
       soundPath = 'assets/sounds/sata_andagi.mp3';
     }
+    final int id = entry.value['id'];
 
     return SkinShopData(
+      id: id,
       name: name,
       imagePath: path,
       bannerPath: bannerPath,

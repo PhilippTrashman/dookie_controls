@@ -76,6 +76,13 @@ class _SkibidiOpenerState extends State<SkibidiOpener> {
 
   Column mainPage(
       BuildContext context, AsyncSnapshot<List<SkinShopData>> snapshot) {
+    Map<int, SkinShopData> gachaTexts() {
+      final List<SkinShopData> list = snapshot.data!;
+      final Map<int, SkinShopData> gachaItems =
+          list.asMap().map((k, v) => MapEntry(k, v));
+      return gachaItems;
+    }
+
     return Column(
       children: [
         Expanded(
@@ -107,15 +114,19 @@ class _SkibidiOpenerState extends State<SkibidiOpener> {
                     decoration: BoxDecoration(
                       color: Colors.black.withOpacity(0.25),
                     ),
-                    child: const Center(
+                    child: Center(
                         child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text('Rewards will be collected on full release'),
-                        Text('獎勵將在完全發佈時收取')
-                      ],
-                    ))),
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                          ...gachaTexts()
+                              .entries
+                              .where((e) => dn.selectedUser!.gachaSave.gachas
+                                  .containsKey(e.value.id))
+                              .map((e) => Text(
+                                    '${e.key}: ${e.value.name}',
+                                  )),
+                        ]))),
                 if (_showGacha)
                   Align(alignment: Alignment.center, child: gachaShop(snapshot))
               ],
@@ -194,6 +205,10 @@ class _SkibidiOpenerState extends State<SkibidiOpener> {
           return PullWindow(
               data: _images[_imageIndex], colorScheme: colorScheme);
         });
+    if (dn.selectedUser != null) {
+      dn.selectedUser!.gachaSave.addGacha(_images[_imageIndex].id);
+      debugPrint(dn.selectedUser!.gachaSave.gachas.toString());
+    }
   }
 
   void _switchImage() {
