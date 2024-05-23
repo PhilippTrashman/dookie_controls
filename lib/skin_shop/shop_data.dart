@@ -251,7 +251,6 @@ Future<List<SkinShopData>> loadAssetImages() async {
     if (path.contains('sata_andagi')) {
       soundPath = 'assets/sounds/sata_andagi.mp3';
     }
-    debugPrint('path: $path, name: $name, tier: $tier');
 
     return SkinShopData(
       name: name,

@@ -125,7 +125,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       200; // Adjust the divisor to fit your needs
                   return GridView.builder(
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: crossAxisCount,
+                      crossAxisCount: (crossAxisCount > 1) ? crossAxisCount : 2,
                     ),
                     itemCount: dookieNotifier.users.length,
                     itemBuilder: (BuildContext context, int index) {
