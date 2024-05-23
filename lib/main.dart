@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'dart:math';
 import 'package:dookie_controls/color_schemes/color_schemes.g.dart';
 import 'package:dookie_controls/imports.dart';
 import 'package:dookie_controls/dookie_notifier.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:dookie_controls/dookie_clicker.dart';
@@ -11,6 +14,7 @@ import 'dart:async';
 import 'package:dookie_controls/model_viewer.dart';
 import 'package:dookie_controls/skibidi_opener.dart';
 import 'package:dookie_controls/bluetooth_messenger.dart';
+import 'package:dookie_controls/info_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -21,6 +25,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (Platform.isAndroid || Platform.isIOS) {
+      SystemChrome.setPreferredOrientations([
+        DeviceOrientation.portraitUp,
+        DeviceOrientation.portraitDown,
+      ]);
+    }
     return ChangeNotifierProvider(
       create: (context) => DookieNotifier(),
       child: MaterialApp(
@@ -45,17 +55,22 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage>
+    with SingleTickerProviderStateMixin {
   final refreshCompleter = Completer<void>();
+  late final AnimationController _iconController;
   late ColorScheme colorScheme;
   User? selectedUser;
   List users = [];
   late Future<String> _initFuture;
-  late DookieNotifier dookieNotifier;
+  late DookieNotifier dn;
+
+  final ValueNotifier<bool> _deleteMode = ValueNotifier(false);
+
   @override
   Widget build(BuildContext context) {
     colorScheme = Theme.of(context).colorScheme;
-    dookieNotifier = Provider.of<DookieNotifier>(context);
+    dn = Provider.of<DookieNotifier>(context);
     // if (!dookieNotifier.databaseReady) {
     //   init();
     // }
@@ -68,10 +83,29 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     var dookieNotifier = context.read<DookieNotifier>();
     _initFuture = dookieNotifier.readUsers();
+    _iconController = AnimationController(
+      duration: const Duration(milliseconds: 200),
+      vsync: this,
+    );
+    _deleteMode.addListener(_handleDeleteModeChange);
+  }
+
+  void _handleDeleteModeChange() {
+    if (_deleteMode.value) {
+      _iconController.forward();
+    } else {
+      _iconController.reverse();
+    }
+  }
+
+  @override
+  void dispose() {
+    _iconController.dispose();
+    super.dispose();
   }
 
   Future<void> init() async {
-    await dookieNotifier.readUsers();
+    await dn.readUsers();
   }
 
   Widget loadingScreen() {
@@ -92,7 +126,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget shownScreen() {
-    if (dookieNotifier.selectedUser != null) {
+    if (dn.selectedUser != null) {
       return const MainPage();
     } else {
       return logInScreen();
@@ -114,7 +148,7 @@ class _MyHomePageState extends State<MyHomePage> {
           children: <Widget>[
             Expanded(flex: 2, child: Container(child: ignitionLock())),
             Text(
-              dookieNotifier.users.isEmpty ? "" : "Select a user",
+              dn.users.isEmpty ? "" : "Select a user",
               style: TextStyle(color: colorScheme.onPrimaryContainer),
             ),
             Expanded(
@@ -127,12 +161,12 @@ class _MyHomePageState extends State<MyHomePage> {
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: (crossAxisCount > 1) ? crossAxisCount : 2,
                     ),
-                    itemCount: dookieNotifier.users.length,
+                    itemCount: dn.users.length,
                     itemBuilder: (BuildContext context, int index) {
-                      if (dookieNotifier.users.isEmpty) {
+                      if (dn.users.isEmpty) {
                         return const SizedBox();
                       }
-                      return ignitionKey(user: dookieNotifier.users[index]!);
+                      return ignitionKey(user: dn.users.values.toList()[index]);
                     },
                   );
                 },
@@ -144,14 +178,33 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: Center(
                     child: ElevatedButton(
                       onPressed: () {
-                        nameController.clear();
-                        lastNameController.clear();
-                        selectedCarBrand = null;
-                        addUserWindow();
+                        if (!_deleteMode.value) {
+                          nameController.clear();
+                          lastNameController.clear();
+                          selectedCarBrand = null;
+                          addUserWindow();
+                        } else {
+                          setState(() {
+                            _deleteMode.value = false;
+                          });
+                        }
                       },
-                      child: Icon(
-                        Icons.add,
-                        color: colorScheme.onSecondaryContainer,
+                      child: ValueListenableBuilder<bool>(
+                        valueListenable: _deleteMode,
+                        builder: (context, value, child) {
+                          return AnimatedBuilder(
+                            animation: _iconController,
+                            builder: (context, child) {
+                              return Transform.rotate(
+                                angle: _iconController.value * pi / 4,
+                                child: Icon(
+                                  Icons.add,
+                                  color: colorScheme.onSecondaryContainer,
+                                ),
+                              );
+                            },
+                          );
+                        },
                       ),
                     ),
                   )),
@@ -231,7 +284,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           selectedCarBrand == null) {
                         return;
                       }
-                      dookieNotifier.addUser(
+                      dn.addUser(
                           name: nameController.text,
                           lastName: lastNameController.text,
                           carBrand: selectedCarBrand!);
@@ -250,7 +303,7 @@ class _MyHomePageState extends State<MyHomePage> {
         int randomNumber = Random().nextInt(10);
         int randomNumber2 = Random().nextInt(10);
         if (randomNumber == randomNumber2) {
-          dookieNotifier.selectUser(selectedUser!);
+          dn.selectUser(selectedUser!);
           selectedUser = null;
           ScaffoldMessenger.of(context)
             ..hideCurrentSnackBar()
@@ -271,7 +324,7 @@ class _MyHomePageState extends State<MyHomePage> {
       } else if (selectedUser!.carBrand.id == 3) {
         buyDLCPopup();
       } else {
-        dookieNotifier.selectUser(selectedUser!);
+        dn.selectUser(selectedUser!);
         selectedUser = null;
         ScaffoldMessenger.of(context)
           ..hideCurrentSnackBar()
@@ -366,6 +419,12 @@ class _MyHomePageState extends State<MyHomePage> {
           selectedUser = user;
         });
       },
+      onLongPress: () {
+        setState(() {
+          debugPrint('Long Pressed');
+          _deleteMode.value = true;
+        });
+      },
       child: Container(
         margin: const EdgeInsets.all(10),
         padding: const EdgeInsets.all(10),
@@ -373,28 +432,76 @@ class _MyHomePageState extends State<MyHomePage> {
           color: Theme.of(context).colorScheme.secondaryContainer,
           borderRadius: BorderRadius.circular(10),
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+        child: Stack(
           children: [
-            Text(
-              user.name,
-              textAlign: TextAlign.center,
-              style: TextStyle(color: colorScheme.onSecondaryContainer),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  user.name,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: colorScheme.onSecondaryContainer),
+                ),
+                Text(
+                  user.lastName,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: colorScheme.onSecondaryContainer),
+                ),
+                Expanded(
+                  child: SvgPicture.asset(
+                    user.carBrand.logo,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+              ],
             ),
-            Text(
-              user.lastName,
-              textAlign: TextAlign.center,
-              style: TextStyle(color: colorScheme.onSecondaryContainer),
-            ),
-            Expanded(
-              child: SvgPicture.asset(
-                user.carBrand.logo,
-                fit: BoxFit.contain,
+            if (_deleteMode.value)
+              Positioned(
+                top: 0,
+                right: 0,
+                child: IconButton(
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return deleteConfirmation(user);
+                      },
+                    );
+                  },
+                  icon: Icon(
+                    Icons.delete,
+                    color: colorScheme.onSecondaryContainer,
+                  ),
+                ),
               ),
-            ),
           ],
         ),
       ),
+    );
+  }
+
+  AlertDialog deleteConfirmation(User user) {
+    return AlertDialog(
+      title: const Text('Delete User'),
+      content: Text('Are you sure you want to delete ${user.name}'),
+      actions: [
+        TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text('Cancel')),
+        TextButton(
+            onPressed: () {
+              dn.removeUser(user.id);
+              if (dn.users.isEmpty) {
+                setState(() {
+                  _deleteMode.value = false;
+                });
+              }
+              Navigator.of(context).pop();
+            },
+            child: const Text('Delete')),
+      ],
     );
   }
 }
@@ -445,7 +552,7 @@ class _MainPageState extends State<MainPage> {
         page = const Placeholder(text: 'Settings');
         break;
       default:
-        page = const Placeholder(text: 'Info');
+        page = const InfoPage();
     }
     colorScheme = Theme.of(context).colorScheme;
 

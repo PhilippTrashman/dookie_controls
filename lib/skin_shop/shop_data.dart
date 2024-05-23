@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:audioplayers/audioplayers.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -85,6 +88,7 @@ class SkinShopImage extends StatelessWidget {
       child: GestureDetector(
         onTap: () {
           showDialog(
+            barrierDismissible: data.name != 'Sata Andagi',
             context: context,
             builder: (context) {
               return purchasePopUp(context);
@@ -142,34 +146,40 @@ class SkinShopImage extends StatelessWidget {
   }
 
   Widget purchasePopUp(BuildContext context) {
-    return Dialog(
-      clipBehavior: Clip.antiAlias,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Image.asset(
-            data.portraitPath,
-            fit: BoxFit.cover,
-            height: double.infinity,
-            width: double.infinity,
-            alignment: Alignment.center,
-          ),
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Expanded(
-                flex: 2,
-                child: SizedBox(),
-              ),
-              Expanded(child: buyMessage(context))
-            ],
-          ),
-        ],
-      ),
-    );
+    return LayoutBuilder(builder: (context, constraints) {
+      bool isPortrait = constraints.maxHeight > constraints.maxWidth;
+      if (data.tier == 'Free') {
+        return SataAndagiPopUp(data: data);
+      }
+      return Dialog(
+        clipBehavior: Clip.antiAlias,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Image.asset(
+              isPortrait ? data.portraitPath : data.bannerPath,
+              fit: BoxFit.cover,
+              height: double.infinity,
+              width: double.infinity,
+              alignment: Alignment.center,
+            ),
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Expanded(
+                  flex: 2,
+                  child: SizedBox(),
+                ),
+                Expanded(child: buyMessage(context))
+              ],
+            ),
+          ],
+        ),
+      );
+    });
   }
 
   Container buyMessage(BuildContext context) {
@@ -267,4 +277,86 @@ Future<List<SkinShopData>> loadAssetImages() async {
   }).toList();
 
   return images;
+}
+
+class SataAndagiPopUp extends StatefulWidget {
+  final SkinShopData data;
+
+  const SataAndagiPopUp({required this.data, super.key});
+
+  @override
+  State<SataAndagiPopUp> createState() => _SataAndagiPopUpState();
+}
+
+class _SataAndagiPopUpState extends State<SataAndagiPopUp>
+    with SingleTickerProviderStateMixin {
+  late AudioPlayer _audioPlayer;
+  late AnimationController _animController;
+  Timer? _startMusicTimer;
+  Timer? _stopMusicTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    _audioPlayer = AudioPlayer();
+    _audioPlayer.setReleaseMode(ReleaseMode.stop);
+    _animController = AnimationController(
+      duration: const Duration(milliseconds: 500),
+      vsync: this,
+    )..forward();
+    _startMusicTimer = Timer(const Duration(milliseconds: 500), () {
+      _playMusic();
+    });
+    _stopMusicTimer = Timer(const Duration(milliseconds: 3000), () {
+      _stopMusic();
+    });
+  }
+
+  @override
+  void dispose() {
+    _animController.dispose();
+    // _stopMusic();
+    super.dispose();
+  }
+
+  void _playMusic() async {
+    await _audioPlayer.setSource(AssetSource('sounds/sata_andagi.mp3'));
+    await _audioPlayer.resume();
+  }
+
+  void _stopMusic() async {
+    await _audioPlayer.stop().then((value) {
+      _audioPlayer.dispose();
+      Navigator.of(context).pop();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ScaleTransition(
+      scale: Tween<double>(begin: 0, end: 1).animate(
+        CurvedAnimation(
+          parent: _animController,
+          curve: Curves.easeOut,
+        ),
+      ),
+      child: Dialog(
+        child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: Colors.black,
+                width: 2,
+              ),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.asset(
+                widget.data.imagePath,
+                fit: BoxFit.fill,
+              ),
+            )),
+      ),
+    );
+  }
 }

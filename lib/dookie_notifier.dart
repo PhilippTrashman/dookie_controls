@@ -157,6 +157,9 @@ class DookieNotifier extends ChangeNotifier {
   }
 
   void removeUser(int userId) {
+    if (selectedUser?.id == userId) {
+      selectedUser = null;
+    }
     users.remove(userId);
     writeUsers();
     notifyListeners();

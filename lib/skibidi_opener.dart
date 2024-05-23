@@ -1,6 +1,9 @@
 import 'dart:async';
+import 'dart:io';
 
+import 'package:dookie_controls/models/gacha_save.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'dart:math';
 import 'package:provider/provider.dart';
 import 'package:dookie_controls/dookie_notifier.dart';
@@ -57,8 +60,32 @@ class _SkibidiOpenerState extends State<SkibidiOpener> {
     _skinShopDataFuture = loadAssetImages();
   }
 
+  List<GachaWidget> gachaTexts(List<SkinShopData> list) {
+    final Map<int, SkinShopData> gachaItems =
+        list.asMap().map((k, v) => MapEntry(k + 1, v));
+    final List<GachaWidget> gachaContainer = [];
+
+    final userGachas = dn.selectedUser!.gachaSave.gachas;
+
+    for (final item in userGachas.values) {
+      if (gachaItems.containsKey(item.id)) {
+        gachaContainer.add(GachaWidget(
+            data: gachaItems[item.id]!,
+            gachaSave: item,
+            colorScheme: colorScheme));
+      }
+    }
+    return gachaContainer;
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (Platform.isAndroid || Platform.isIOS) {
+      SystemChrome.setPreferredOrientations([
+        DeviceOrientation.portraitUp,
+        DeviceOrientation.portraitDown,
+      ]);
+    }
     dn = Provider.of<DookieNotifier>(context);
     colorScheme = Theme.of(context).colorScheme;
 
@@ -74,83 +101,93 @@ class _SkibidiOpenerState extends State<SkibidiOpener> {
     );
   }
 
-  Column mainPage(
+  Stack mainPage(
       BuildContext context, AsyncSnapshot<List<SkinShopData>> snapshot) {
-    Map<int, SkinShopData> gachaTexts() {
-      final List<SkinShopData> list = snapshot.data!;
-      final Map<int, SkinShopData> gachaItems =
-          list.asMap().map((k, v) => MapEntry(k, v));
-      return gachaItems;
-    }
-
-    return Column(
+    return Stack(
       children: [
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Container(
-              decoration: BoxDecoration(
-                color: colorScheme.secondaryContainer,
-                borderRadius: BorderRadius.circular(32),
-              ),
-              child: Center(
-                child:
-                    Text('Dookies ${dn.selectedUser!.dookieSave.dookieAmount}'),
+        Column(
+          children: [
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: colorScheme.secondaryContainer,
+                    borderRadius: BorderRadius.circular(32),
+                  ),
+                  child: Center(
+                    child: Text(
+                        'Dookies ${dn.selectedUser!.dookieSave.dookieAmount.toInt()}'),
+                  ),
+                ),
               ),
             ),
-          ),
-        ),
-        const Expanded(
-            child:
-                Center(child: Text('Rewards', style: TextStyle(fontSize: 24)))),
-        Expanded(
-          flex: 10,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                Container(
+            const Expanded(
+                child: Center(
+                    child: Text('Rewards', style: TextStyle(fontSize: 24)))),
+            Expanded(
+              flex: 10,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
                     decoration: BoxDecoration(
                       color: Colors.black.withOpacity(0.25),
                     ),
-                    child: Center(
-                        child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                          ...gachaTexts()
-                              .entries
-                              .where((e) => dn.selectedUser!.gachaSave.gachas
-                                  .containsKey(e.value.id))
-                              .map((e) => Text(
-                                    '${e.key}: ${e.value.name}',
-                                  )),
-                        ]))),
-                if (_showGacha)
-                  Align(alignment: Alignment.center, child: gachaShop(snapshot))
-              ],
-            ),
-          ),
-        ),
-        Expanded(
-          flex: 2,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: SizedBox.expand(
-              child: ElevatedButton(
-                onPressed: () {
-                  showDialog(
-                      context: context,
-                      builder: (context) {
-                        return buyMessage(context, snapshot);
-                      });
-                },
-                child: const Text('Open Case'),
+                    child: Center(child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        final crossAxisCount = constraints.maxWidth ~/ 125;
+                        return GridView.builder(
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: crossAxisCount,
+                            crossAxisSpacing: 8,
+                            mainAxisSpacing: 8,
+                          ),
+                          itemCount: gachaTexts(snapshot.data!).length,
+                          itemBuilder: (context, index) {
+                            return gachaTexts(snapshot.data!)[index];
+                          },
+                        );
+                      },
+                    ))),
               ),
             ),
-          ),
+            Expanded(
+              flex: 2,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: SizedBox.expand(
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: colorScheme.secondaryContainer,
+                    ),
+                    onPressed: () {
+                      if (_showGacha) {
+                        return;
+                      }
+                      showDialog(
+                          context: context,
+                          builder: (context) {
+                            return buyMessage(context, snapshot);
+                          });
+                    },
+                    child: Text(
+                      'Open Case',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          color: colorScheme.onBackground, fontSize: 20),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
+        if (_showGacha)
+          Container(
+              color: Colors.black.withOpacity(0.5),
+              child: Align(
+                  alignment: Alignment.center, child: gachaShop(snapshot))),
       ],
     );
   }
@@ -187,12 +224,27 @@ class _SkibidiOpenerState extends State<SkibidiOpener> {
     return pull;
   }
 
+  final int _payAmount = 249;
+
   void buttonLogic(BuildContext context, bool isChinese,
       AsyncSnapshot<List<SkinShopData>> snapshot) {
     Navigator.of(context).pop();
-    _images = getGachaPull(snapshot);
-    _showGacha = true;
-    _imageIndex = 1;
+    if (dn.selectedUser != null) {
+      if (dn.selectedUser!.dookieSave.dookieAmount >= _payAmount) {
+        dn.selectedUser!.dookieSave.dookieAmount -= _payAmount;
+        _images = getGachaPull(snapshot);
+        _showGacha = true;
+        _imageIndex = 1;
+      } else {
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(
+            SnackBar(
+              content: Text(isChinese ? '你壞了，婊子' : 'You Broke, Bitch'),
+            ),
+          );
+      }
+    }
   }
 
   late List<SkinShopData> _images;
@@ -343,13 +395,13 @@ class _SkibidiOpenerState extends State<SkibidiOpener> {
             Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Expanded(
+                Expanded(
                     child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text('Pay 10 Dookies to open the case?'),
-                    Text('支付 10 Dookies 即可開啟箱子?')
+                    Text('Pay $_payAmount Dookies to open the case?'),
+                    Text('支付 $_payAmount Dookies 即可開啟箱子?')
                   ],
                 )),
                 Row(
@@ -379,7 +431,7 @@ class _SkibidiOpenerState extends State<SkibidiOpener> {
             IgnorePointer(
               child: Image.asset(
                 'assets/images/chinese_thumbs_up.gif',
-                fit: BoxFit.cover,
+                fit: BoxFit.fill,
                 alignment: Alignment.center,
               ),
             ),
@@ -415,14 +467,14 @@ class _PullWindowState extends State<PullWindow>
   @override
   Widget build(BuildContext context) {
     debugPrint('building pull window ${widget.data.bannerPath}');
-    return Dialog(
-      child: ScaleTransition(
-        scale: Tween<double>(begin: 0, end: 1).animate(
-          CurvedAnimation(
-            parent: _controller,
-            curve: Curves.easeOut,
-          ),
+    return ScaleTransition(
+      scale: Tween<double>(begin: 0, end: 1).animate(
+        CurvedAnimation(
+          parent: _controller,
+          curve: Curves.easeOut,
         ),
+      ),
+      child: Dialog(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -435,12 +487,14 @@ class _PullWindowState extends State<PullWindow>
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Image.asset(
-                widget.data.bannerPath,
-                fit: BoxFit.contain,
-                alignment: Alignment.center,
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Image.asset(
+                  widget.data.bannerPath,
+                  fit: BoxFit.contain,
+                  alignment: Alignment.center,
+                ),
               ),
             ),
             Text(
@@ -476,5 +530,60 @@ class _PullWindowState extends State<PullWindow>
   void dispose() {
     _controller.dispose(); // Dispose the AnimationController
     super.dispose();
+  }
+}
+
+class GachaWidget extends StatelessWidget {
+  const GachaWidget(
+      {super.key,
+      required this.data,
+      required this.gachaSave,
+      required this.colorScheme});
+  final SkinShopData data;
+  final GachaSaveObject gachaSave;
+  final ColorScheme colorScheme;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: GestureDetector(
+        child: Stack(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: colorScheme.onSecondary,
+                  width: 2,
+                ),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.asset(data.imagePath, fit: BoxFit.fill),
+              ),
+            ),
+            Column(
+              children: [
+                const Expanded(
+                  flex: 3,
+                  child: SizedBox(),
+                ),
+                Expanded(
+                    child: Container(
+                  color: Colors.black.withOpacity(0.5),
+                  child: SizedBox.expand(
+                    child: Text(
+                      '${gachaSave.amount}',
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                )),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

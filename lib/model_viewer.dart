@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import 'package:dookie_controls/dookie_notifier.dart';
@@ -32,6 +35,12 @@ class _Dookie3DViewerState extends State<Dookie3DViewer>
 
   @override
   Widget build(BuildContext context) {
+    if (Platform.isAndroid || Platform.isIOS) {
+      SystemChrome.setPreferredOrientations([
+        DeviceOrientation.portraitUp,
+        DeviceOrientation.portraitDown,
+      ]);
+    }
     dn = Provider.of<DookieNotifier>(context);
     colorScheme = Theme.of(context).colorScheme;
     return Stack(
@@ -58,15 +67,18 @@ class _Dookie3DViewerState extends State<Dookie3DViewer>
             ),
             Expanded(
                 child: SizedBox.expand(
-              child: ElevatedButton(
-                onPressed: () {
-                  if (_animController.isDismissed) {
-                    _animController.forward();
-                  } else if (_animController.isCompleted) {
-                    _animController.reverse();
-                  }
-                },
-                child: const Text('Shop'),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ElevatedButton(
+                  onPressed: () {
+                    if (_animController.isDismissed) {
+                      _animController.forward();
+                    } else if (_animController.isCompleted) {
+                      _animController.reverse();
+                    }
+                  },
+                  child: const Text('Shop'),
+                ),
               ),
             )),
           ],

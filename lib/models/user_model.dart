@@ -21,6 +21,7 @@ class User {
 
   Map<String, dynamic> toDbMap() {
     return {
+      'version': version,
       'id': id,
       'name': name,
       'last_name': lastName,
@@ -32,6 +33,7 @@ class User {
 
   Map<String, dynamic> toJson() {
     return {
+      'version': version,
       'id': id,
       'name': name,
       'last_name': lastName,
