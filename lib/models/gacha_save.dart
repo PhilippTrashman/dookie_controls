@@ -43,6 +43,16 @@ class GachaSave {
     }
   }
 
+  void removeGacha(int id) {
+    if (gachas.containsKey(id)) {
+      if (gachas[id]!.amount == 1) {
+        gachas.remove(id);
+      } else {
+        gachas[id] = gachas[id]!.copyWith(amount: gachas[id]!.amount - 1);
+      }
+    }
+  }
+
   void upgradeGacha(int id) {
     if (gachas.containsKey(id)) {
       gachas[id] =

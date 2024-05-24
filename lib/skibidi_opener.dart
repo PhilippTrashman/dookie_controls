@@ -47,6 +47,7 @@ class _SkibidiOpenerState extends State<SkibidiOpener> {
   late DookieNotifier dn;
   late ColorScheme colorScheme;
   late Future<List<SkinShopData>> _skinShopDataFuture;
+  late bool isCheater;
   bool _showGacha = false;
   bool _gachaRunning = false;
   bool _gachaDone = false;
@@ -88,6 +89,7 @@ class _SkibidiOpenerState extends State<SkibidiOpener> {
     }
     dn = Provider.of<DookieNotifier>(context);
     colorScheme = Theme.of(context).colorScheme;
+    isCheater = dn.selectedUser?.isCheater ?? false;
 
     return FutureBuilder(
       future: _skinShopDataFuture,
@@ -129,57 +131,12 @@ class _SkibidiOpenerState extends State<SkibidiOpener> {
               flex: 10,
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.25),
-                    ),
-                    child: Center(child: LayoutBuilder(
-                      builder: (context, constraints) {
-                        final crossAxisCount = constraints.maxWidth ~/ 125;
-                        return GridView.builder(
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: crossAxisCount,
-                            crossAxisSpacing: 8,
-                            mainAxisSpacing: 8,
-                          ),
-                          itemCount: gachaTexts(snapshot.data!).length,
-                          itemBuilder: (context, index) {
-                            return gachaTexts(snapshot.data!)[index];
-                          },
-                        );
-                      },
-                    ))),
+                child: userGachas(snapshot),
               ),
             ),
             Expanded(
               flex: 2,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: SizedBox.expand(
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: colorScheme.secondaryContainer,
-                    ),
-                    onPressed: () {
-                      if (_showGacha) {
-                        return;
-                      }
-                      showDialog(
-                          context: context,
-                          builder: (context) {
-                            return buyMessage(context, snapshot);
-                          });
-                    },
-                    child: Text(
-                      'Open Case',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          color: colorScheme.onBackground, fontSize: 20),
-                    ),
-                  ),
-                ),
-              ),
+              child: bottomButtons(context, snapshot),
             ),
           ],
         ),
@@ -190,6 +147,92 @@ class _SkibidiOpenerState extends State<SkibidiOpener> {
                   alignment: Alignment.center, child: gachaShop(snapshot))),
       ],
     );
+  }
+
+  Column bottomButtons(
+      BuildContext context, AsyncSnapshot<List<SkinShopData>> snapshot) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: SizedBox.expand(
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: colorScheme.secondaryContainer,
+                ),
+                onPressed: () {
+                  if (_showGacha) {
+                    return;
+                  }
+                  showDialog(
+                      context: context,
+                      builder: (context) {
+                        return buyMessage(context, snapshot);
+                      });
+                },
+                child: Text(
+                  'Open Case',
+                  textAlign: TextAlign.center,
+                  style:
+                      TextStyle(color: colorScheme.onBackground, fontSize: 20),
+                ),
+              ),
+            ),
+          ),
+        ),
+        if (isCheater)
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SizedBox.expand(
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: colorScheme.secondaryContainer,
+                  ),
+                  onPressed: () {
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return addCheaterMode(snapshot.data!);
+                        });
+                  },
+                  child: Text(
+                    'Cheater Mode',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        color: colorScheme.onBackground, fontSize: 20),
+                  ),
+                ),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Container userGachas(AsyncSnapshot<List<SkinShopData>> snapshot) {
+    return Container(
+        decoration: BoxDecoration(
+          color: Colors.black.withOpacity(0.25),
+        ),
+        child: Center(child: LayoutBuilder(
+          builder: (context, constraints) {
+            final crossAxisCount = constraints.maxWidth ~/ 125;
+            return GridView.builder(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: crossAxisCount,
+                crossAxisSpacing: 8,
+                mainAxisSpacing: 8,
+              ),
+              itemCount: gachaTexts(snapshot.data!).length,
+              itemBuilder: (context, index) {
+                return gachaTexts(snapshot.data!)[index];
+              },
+            );
+          },
+        )));
   }
 
   List<SkinShopData> getGachaPull(AsyncSnapshot<List<SkinShopData>> snapshot) {
@@ -230,8 +273,10 @@ class _SkibidiOpenerState extends State<SkibidiOpener> {
       AsyncSnapshot<List<SkinShopData>> snapshot) {
     Navigator.of(context).pop();
     if (dn.selectedUser != null) {
-      if (dn.selectedUser!.dookieSave.dookieAmount >= _payAmount) {
-        dn.selectedUser!.dookieSave.dookieAmount -= _payAmount;
+      if (dn.selectedUser!.dookieSave.dookieAmount >= _payAmount || isCheater) {
+        if (!isCheater) {
+          dn.selectedUser!.dookieSave.dookieAmount -= _payAmount;
+        }
         _images = getGachaPull(snapshot);
         _showGacha = true;
         _imageIndex = 1;
@@ -380,6 +425,7 @@ class _SkibidiOpenerState extends State<SkibidiOpener> {
 
   Widget buyMessage(
       BuildContext context, AsyncSnapshot<List<SkinShopData>> snapshot) {
+    int payAmount = isCheater ? 0 : _payAmount;
     return Dialog(
       clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(
@@ -399,9 +445,15 @@ class _SkibidiOpenerState extends State<SkibidiOpener> {
                     child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text('Pay $_payAmount Dookies to open the case?'),
-                    Text('支付 $_payAmount Dookies 即可開啟箱子?')
+                    Text('Pay $payAmount Dookies to open the case?'),
+                    Text('支付 $payAmount Dookies 即可開啟箱子?'),
+                    if (isCheater)
+                      const Text('Cheater',
+                          style: TextStyle(
+                            color: Colors.red,
+                          )),
                   ],
                 )),
                 Row(
@@ -437,6 +489,50 @@ class _SkibidiOpenerState extends State<SkibidiOpener> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget addCheaterMode(List<SkinShopData> list) {
+    List<ListTile> tiles() {
+      return list
+          .map((e) => ListTile(
+                title: Text(e.name),
+                subtitle: Text(e.tier),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.add),
+                      onPressed: () {
+                        if (dn.selectedUser != null) {
+                          dn.selectedUser!.gachaSave.addGacha(e.id);
+                        }
+                      },
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.remove),
+                      onPressed: () {
+                        if (dn.selectedUser != null) {
+                          dn.selectedUser!.gachaSave.removeGacha(e.id);
+                        }
+                      },
+                    ),
+                  ],
+                ),
+              ))
+          .toList();
+    }
+
+    return Dialog(
+      clipBehavior: Clip.antiAlias,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: ListView(
+        children: [
+          ...tiles(),
+        ],
       ),
     );
   }

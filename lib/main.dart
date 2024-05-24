@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:dookie_controls/settings_menu.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 import 'package:dookie_controls/color_schemes/color_schemes.g.dart';
@@ -549,7 +550,7 @@ class _MainPageState extends State<MainPage> {
         page = const Dookie3DViewer();
         break;
       case 4:
-        page = const Placeholder(text: 'Settings');
+        page = const SettingsMenu();
         break;
       default:
         page = const InfoPage();

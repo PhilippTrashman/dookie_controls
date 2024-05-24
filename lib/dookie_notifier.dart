@@ -147,7 +147,9 @@ class DookieNotifier extends ChangeNotifier {
         lastName: lastName,
         carBrand: carBrand,
         dookieSave: dookieBaseSave(userId),
-        gachaSave: GachaSave(id: userId, gachas: {}));
+        gachaSave: GachaSave(id: userId, gachas: {}),
+        devMode: false,
+        isCheater: false);
     writeUsers();
     notifyListeners();
   }
