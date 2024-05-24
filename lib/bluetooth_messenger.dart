@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
 import 'package:dookie_controls/bluetooth_serial/select_bonded_device_page.dart';
@@ -67,9 +68,9 @@ class _ConnectionpageState extends State<Connectionpage> {
   Widget mainScreen() {
     return LayoutBuilder(
       builder: (context, constraints) {
-        // double width = constraints.maxWidth;
+        double width = constraints.maxWidth;
         double height = constraints.maxHeight;
-        bool vertical = height > 500;
+        bool vertical = height * 1.5 > width;
         return vertical ? verticalView(height) : horizontalView(height);
       },
     );
@@ -131,23 +132,15 @@ class _ConnectionpageState extends State<Connectionpage> {
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
                   children: [
-                    SizedBox(
-                      height: height * 0.1,
-                      width: double.infinity,
-                      child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          )),
-                          onPressed: () {
-                            if (dn.isConnected) {
-                              debugPrint('Joystick View');
-                            }
-                          },
-                          child: const Text(
-                            'Joystick View',
-                          )),
+                    textDivider(
+                      height: height * 0.05,
+                      header: workingConnection(),
                     ),
+                    autoPilotButton(height),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    joystickViewButton(height),
                     textDivider(
                       height: height * 0.05,
                       header: 'Controller',
@@ -195,6 +188,62 @@ class _ConnectionpageState extends State<Connectionpage> {
             ),
           ),
       ],
+    );
+  }
+
+  SizedBox joystickViewButton(double height) {
+    return SizedBox(
+      height: height * 0.1,
+      width: double.infinity,
+      child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+              shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          )),
+          onPressed: () {
+            if (dn.isConnected) {
+              debugPrint('Joystick View');
+            }
+          },
+          child: const Text(
+            'Joystick View',
+          )),
+    );
+  }
+
+  bool isAutoPilot = false;
+
+  Widget autoPilotButton(double height) {
+    return Container(
+      width: double.infinity,
+      child: SizedBox(
+          child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+            shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        )),
+        onPressed: () {},
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              const Text('Auto Pilot'),
+              Switch(
+                value: isAutoPilot,
+                onChanged: (value) {
+                  if (dn.isConnected) {
+                    sendMessage(value ? 'auto-pilot-start' : 'auto-pilot-stop');
+                    setState(() {
+                      isAutoPilot = value;
+                      debugPrint('Auto Pilot: $isAutoPilot');
+                    });
+                  }
+                },
+              ),
+            ],
+          ),
+        ),
+      )),
     );
   }
 
@@ -367,18 +416,12 @@ class _ConnectionpageState extends State<Connectionpage> {
     );
   }
 
-  Widget workingConnection() {
-    return Column(
-      children: [
-        Text(
-          dn.isConnecting
-              ? 'Connecting...'
-              : dn.isConnected
-                  ? 'Connected'
-                  : 'Not Connected',
-        ),
-      ],
-    );
+  String workingConnection() {
+    return dn.isConnecting
+        ? 'Connecting...'
+        : dn.isConnected
+            ? 'Connected'
+            : 'Not Connected';
   }
 
   void connectToDevice() async {
