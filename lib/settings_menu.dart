@@ -64,8 +64,8 @@ class _SettingsMenuState extends State<SettingsMenu> {
             ),
           ),
           ListTile(
-            title: const Text('Version'),
-            trailing: const Text('0.0.1'),
+            title: const Text(''),
+            trailing: const Text('V.0.0.1'),
             onTap: () {
               setState(() {
                 _tapAmount++;

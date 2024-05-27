@@ -385,28 +385,49 @@ class _MyHomePageState extends State<MyHomePage>
     return Column(
       children: [
         Expanded(
-          child: ElevatedButton(
-            style: ButtonStyle(
-              backgroundColor:
-                  MaterialStateProperty.all<Color>(Colors.transparent),
+          child: SizedBox.expand(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ElevatedButton(
+                style: ButtonStyle(
+                  backgroundColor:
+                      MaterialStateProperty.all<Color>(Colors.transparent),
+                ),
+                onPressed: login,
+                child: selectedUser != null
+                    ? Icon(
+                        Icons.lock_open,
+                        color: colorScheme.onPrimaryContainer,
+                      )
+                    : Icon(
+                        Icons.lock,
+                        color: colorScheme.onPrimaryContainer,
+                      ),
+              ),
             ),
-            onPressed: login,
-            child: selectedUser != null
-                ? Icon(
-                    Icons.lock_open,
-                    color: colorScheme.onPrimaryContainer,
-                  )
-                : Icon(
-                    Icons.lock,
-                    color: colorScheme.onPrimaryContainer,
-                  ),
           ),
         ),
+        if (selectedUser == null) const Expanded(child: SizedBox()),
         if (selectedUser != null)
           Expanded(
-            child: SvgPicture.asset(
-              selectedUser!.carBrand.logo,
-              fit: BoxFit.contain,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: AspectRatio(
+                  aspectRatio: 1,
+                  child: Container(
+                    color: colorScheme.secondaryContainer,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: SvgPicture.asset(
+                        selectedUser!.carBrand.logo,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             ),
           ),
       ],

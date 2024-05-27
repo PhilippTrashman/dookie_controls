@@ -156,7 +156,7 @@ class _SkibidiOpenerState extends State<SkibidiOpener> {
       children: [
         Expanded(
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
             child: SizedBox.expand(
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
