@@ -292,8 +292,6 @@ class _SataAndagiPopUpState extends State<SataAndagiPopUp>
     with SingleTickerProviderStateMixin {
   late AudioPlayer _audioPlayer;
   late AnimationController _animController;
-  Timer? _startMusicTimer;
-  Timer? _stopMusicTimer;
 
   @override
   void initState() {
@@ -304,10 +302,10 @@ class _SataAndagiPopUpState extends State<SataAndagiPopUp>
       duration: const Duration(milliseconds: 500),
       vsync: this,
     )..forward();
-    _startMusicTimer = Timer(const Duration(milliseconds: 500), () {
+    Timer(const Duration(milliseconds: 500), () {
       _playMusic();
     });
-    _stopMusicTimer = Timer(const Duration(milliseconds: 3000), () {
+    Timer(const Duration(milliseconds: 3000), () {
       _stopMusic();
     });
   }

@@ -383,9 +383,12 @@ class _SkibidiOpenerState extends State<SkibidiOpener> {
     return AnimatedSwitcher(
       duration: Duration(milliseconds: _switchSpeed),
       transitionBuilder: (Widget child, Animation<double> animation) {
-        var inTween = Tween<Offset>(begin: Offset(0, 0), end: Offset(-1, 0));
-        var midTween = Tween<Offset>(begin: Offset(1, 0), end: Offset(0, 0));
-        var outTween = Tween<Offset>(begin: Offset(2, 0), end: Offset(1, 0));
+        var inTween =
+            Tween<Offset>(begin: const Offset(0, 0), end: const Offset(-1, 0));
+        var midTween =
+            Tween<Offset>(begin: const Offset(1, 0), end: const Offset(0, 0));
+        var outTween =
+            Tween<Offset>(begin: const Offset(2, 0), end: const Offset(1, 0));
 
         _leftImage = Image.asset(
           _images[_imageIndex - 1].imagePath,
@@ -704,7 +707,7 @@ class GachaWidget extends StatelessWidget {
             ),
             Row(
               children: [
-                Expanded(
+                const Expanded(
                   flex: 4,
                   child: SizedBox(),
                 ),

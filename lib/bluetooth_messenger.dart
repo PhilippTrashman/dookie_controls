@@ -216,37 +216,34 @@ class _ConnectionpageState extends State<Connectionpage> {
   bool isAutoPilot = false;
 
   Widget autoPilotButton(double height) {
-    return Container(
-      width: double.infinity,
-      child: SizedBox(
-          child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-            shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        )),
-        onPressed: () {},
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              const Text('Auto Pilot'),
-              Switch(
-                value: isAutoPilot,
-                onChanged: (value) {
-                  if (dn.isConnected) {
-                    sendMessage(value ? 'auto-pilot-start' : 'auto-pilot-stop');
-                    setState(() {
-                      isAutoPilot = value;
-                      debugPrint('Auto Pilot: $isAutoPilot');
-                    });
-                  }
-                },
-              ),
-            ],
-          ),
-        ),
+    return SizedBox(
+        child: ElevatedButton(
+      style: ElevatedButton.styleFrom(
+          shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
       )),
-    );
+      onPressed: () {},
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            const Text('Auto Pilot'),
+            Switch(
+              value: isAutoPilot,
+              onChanged: (value) {
+                if (dn.isConnected) {
+                  sendMessage(value ? 'auto-pilot-start' : 'auto-pilot-stop');
+                  setState(() {
+                    isAutoPilot = value;
+                    debugPrint('Auto Pilot: $isAutoPilot');
+                  });
+                }
+              },
+            ),
+          ],
+        ),
+      ),
+    ));
   }
 
   Widget controllerButton({

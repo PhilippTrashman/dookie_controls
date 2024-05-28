@@ -11,6 +11,7 @@ class SettingsMenu extends StatefulWidget {
 
 class _SettingsMenuState extends State<SettingsMenu> {
   late DookieNotifier _dn;
+  // ignore: unused_field
   late ColorScheme _colorScheme;
   int _tapAmount = 0;
 
@@ -26,69 +27,67 @@ class _SettingsMenuState extends State<SettingsMenu> {
   Widget build(BuildContext context) {
     _dn = Provider.of<DookieNotifier>(context);
     _colorScheme = Theme.of(context).colorScheme;
-    return Container(
-      child: Column(
-        children: [
-          Expanded(
-            child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: getTwerkingThanos(_dn.selectedUser!.devMode),
-                      ),
+    return Column(
+      children: [
+        Expanded(
+          child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: getTwerkingThanos(_dn.selectedUser!.devMode),
                     ),
-                    Expanded(child: Image.asset('assets/icons/icon.png')),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: getTwerkingThanos(_dn.selectedUser!.devMode),
-                      ),
+                  ),
+                  Expanded(child: Image.asset('assets/icons/icon.png')),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: getTwerkingThanos(_dn.selectedUser!.devMode),
                     ),
-                  ],
-                )),
+                  ),
+                ],
+              )),
+        ),
+        Expanded(
+          flex: 4,
+          child: ListView(
+            shrinkWrap: true,
+            children: [
+              const Divider(),
+              ..._userTiles(),
+              const Divider(),
+              if (_dn.selectedUser!.devMode) ..._devWidgets(),
+            ],
           ),
-          Expanded(
-            flex: 4,
-            child: ListView(
-              shrinkWrap: true,
-              children: [
-                const Divider(),
-                ..._userTiles(),
-                const Divider(),
-                if (_dn.selectedUser!.devMode) ..._devWidgets(),
-              ],
-            ),
-          ),
-          ListTile(
-            title: const Text(''),
-            trailing: const Text('V.0.0.1'),
-            onTap: () {
-              setState(() {
-                _tapAmount++;
-                if (_tapAmount == 10) {
-                  _dn.selectedUser!.devMode = true;
-                  _tapAmount = 0;
-                }
-              });
-            },
-          ),
-        ],
-      ),
+        ),
+        ListTile(
+          title: const Text(''),
+          trailing: const Text('V.0.0.1'),
+          onTap: () {
+            setState(() {
+              _tapAmount++;
+              if (_tapAmount == 10) {
+                _dn.selectedUser!.devMode = true;
+                _tapAmount = 0;
+              }
+            });
+          },
+        ),
+      ],
     );
   }
 
   List<Widget> _userTiles() {
     return [
       ListTile(
-        title: Text('Option 1'),
+        title: const Text('Option 1'),
         onTap: () {},
       ),
       ListTile(
-        title: Text('Option 2'),
+        title: const Text('Option 2'),
         onTap: () {},
       ),
     ];
