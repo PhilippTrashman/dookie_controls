@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
 import 'package:dookie_controls/bluetooth_serial/select_bonded_device_page.dart';
@@ -104,6 +103,7 @@ class _ConnectionpageState extends State<Connectionpage> {
               flex: 8,
               child: Container(
                 color: colorScheme.secondaryContainer,
+                child: verticalView(height),
               )),
           const VerticalDivider(),
           Expanded(child: verticalBanner(shown: shown)),

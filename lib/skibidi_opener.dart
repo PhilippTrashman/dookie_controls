@@ -644,6 +644,13 @@ class GachaWidget extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: GestureDetector(
+        onTap: () {
+          showDialog(
+              context: context,
+              builder: (context) {
+                return gachaInfoScreen();
+              });
+        },
         child: Stack(
           children: [
             Container(
@@ -675,6 +682,59 @@ class GachaWidget extends StatelessWidget {
                     ),
                   ),
                 )),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget gachaInfoScreen() {
+    return Dialog(
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: Stack(
+          children: [
+            Expanded(
+              child: Image.asset(data.bannerPath,
+                  fit: BoxFit.contain, alignment: Alignment.center),
+            ),
+            Row(
+              children: [
+                Expanded(
+                  flex: 4,
+                  child: SizedBox(),
+                ),
+                Expanded(
+                  child: SizedBox.expand(
+                    child: Container(
+                      color: Colors.black.withOpacity(0.5),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                ...List.generate(
+                                    5, (index) => const Icon(Icons.star))
+                              ],
+                            ),
+                          ),
+                          Expanded(
+                              flex: 3,
+                              child: Column(
+                                children: [
+                                  Text(data.name),
+                                  Text(data.tier),
+                                ],
+                              )),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
           ],
