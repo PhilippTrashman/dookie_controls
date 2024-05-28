@@ -53,6 +53,7 @@ flutter:
     - assets/icons/
     - assets/images/
     - assets/images/steering_wheels/
+    - assets/images/engine_errors/
     - assets/images/pfps/
     - assets/ads/
     - assets/brands/

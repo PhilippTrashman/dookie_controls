@@ -65,6 +65,31 @@ class _ConnectionpageState extends State<Connectionpage> {
     );
   }
 
+  Widget engineErrors() {
+    return Padding(
+      padding: const EdgeInsets.all(4.0),
+      child: Row(
+        children: [
+          Expanded(
+            child: Image.asset('assets/images/engine_errors/warning.png'),
+          ),
+          Expanded(
+            child: Image.asset('assets/images/engine_errors/battery.png'),
+          ),
+          Expanded(
+            child: Image.asset('assets/images/engine_errors/motor.png'),
+          ),
+          Expanded(
+            child: Image.asset('assets/images/engine_errors/oel.png'),
+          ),
+          Expanded(
+            child: Image.asset('assets/images/engine_errors/temp.png'),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget mainScreen() {
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -175,31 +200,64 @@ class _ConnectionpageState extends State<Connectionpage> {
                         ),
                       ],
                     ),
-                  ),
+                  )
+                else
+                  Expanded(child: engineErrors()),
                 const SizedBox(
                   height: 10,
                 ),
                 Expanded(
                   flex: 6,
-                  child: GestureDetector(
-                    onPanUpdate: (details) {
-                      setState(() {
-                        double newRotation = rotation + details.delta.dx / 100;
-                        if (newRotation < -0.75) {
-                          newRotation = -0.75;
-                        } else if (newRotation > 0.75) {
-                          newRotation = 0.75;
-                        }
-                        rotation = newRotation;
-                      });
-                    },
-                    child: Transform.rotate(
-                      angle: rotation,
-                      child: Image.asset(
-                        getSteeringWheelPicture(),
-                        fit: BoxFit.contain,
+                  child: Stack(
+                    children: [
+                      Column(
+                        children: [
+                          Expanded(
+                            child: GestureDetector(
+                              onPanUpdate: (details) {
+                                setState(() {
+                                  double newRotation =
+                                      rotation + details.delta.dx / 100;
+                                  if (newRotation < -0.75) {
+                                    newRotation = -0.75;
+                                  } else if (newRotation > 0.75) {
+                                    newRotation = 0.75;
+                                  }
+                                  rotation = newRotation;
+                                });
+                              },
+                            ),
+                          ),
+                          Expanded(
+                            child: GestureDetector(
+                              onPanUpdate: (details) {
+                                setState(() {
+                                  double newRotation =
+                                      rotation - details.delta.dx / 100;
+                                  if (newRotation < -0.75) {
+                                    newRotation = -0.75;
+                                  } else if (newRotation > 0.75) {
+                                    newRotation = 0.75;
+                                  }
+                                  rotation = newRotation;
+                                });
+                              },
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
+                      IgnorePointer(
+                        child: Center(
+                          child: Transform.rotate(
+                            angle: rotation,
+                            child: Image.asset(
+                              getSteeringWheelPicture(),
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+                        ),
+                      )
+                    ],
                   ),
                 ),
               ],
@@ -408,7 +466,6 @@ class _ConnectionpageState extends State<Connectionpage> {
       height: height,
       child: Column(
         children: [
-          if (turnDisabled) const Expanded(flex: 2, child: SizedBox()),
           if (!turnDisabled)
             Expanded(
               flex: 2,
@@ -447,7 +504,9 @@ class _ConnectionpageState extends State<Connectionpage> {
                   ),
                 ],
               ),
-            ),
+            )
+          else
+            Expanded(flex: 2, child: engineErrors()),
           const Expanded(flex: 1, child: SizedBox()),
           Expanded(
             flex: 3,
