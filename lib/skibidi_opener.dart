@@ -352,6 +352,8 @@ class _SkibidiOpenerState extends State<SkibidiOpener> {
             ),
             Text(_images[_imageIndex].name,
                 style: const TextStyle(fontSize: 24)),
+            Text(_images[_imageIndex].tier,
+                style: const TextStyle(fontSize: 16)),
             ElevatedButton(
               onPressed: () {
                 debugPrint(_gachaDone.toString());
