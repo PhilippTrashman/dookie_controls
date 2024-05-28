@@ -113,6 +113,126 @@ class _ConnectionpageState extends State<Connectionpage> {
     );
   }
 
+  double rotation = 0;
+  bool joystickView = false;
+
+  String getSteeringWheelPicture() {
+    switch (dn.selectedUser?.carBrand.id) {
+      case 1:
+        return 'assets/images/steering_wheels/volkswagen.png';
+      case 2:
+        return 'assets/images/steering_wheels/bmw.png';
+      case 4:
+        return 'assets/images/steering_wheels/lada.png';
+      case 5:
+        return 'assets/images/steering_wheels/go_shi_he.png';
+      default:
+        return 'assets/images/steering_wheels/go_shi_he.png';
+    }
+  }
+
+  Widget steeringWheel(double height) {
+    return SizedBox(
+      height: height * 0.3,
+      child: Row(
+        children: [
+          Expanded(
+            flex: 3,
+            child: Column(
+              children: [
+                if (!turnDisabled)
+                  Expanded(
+                    child: Row(
+                      children: [
+                        Expanded(
+                          flex: 2,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              sendMessage('indicator-left');
+                            },
+                            child: const Icon(Icons.arrow_back_ios),
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        Expanded(
+                          child: Container(
+                            color: Colors.transparent,
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        Expanded(
+                          flex: 2,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              sendMessage('indicator-right');
+                            },
+                            child: const Icon(Icons.arrow_forward_ios),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                const SizedBox(
+                  height: 10,
+                ),
+                Expanded(
+                  flex: 6,
+                  child: GestureDetector(
+                    onPanUpdate: (details) {
+                      setState(() {
+                        double newRotation = rotation + details.delta.dx / 100;
+                        if (newRotation < -0.75) {
+                          newRotation = -0.75;
+                        } else if (newRotation > 0.75) {
+                          newRotation = 0.75;
+                        }
+                        rotation = newRotation;
+                      });
+                    },
+                    child: Transform.rotate(
+                      angle: rotation,
+                      child: Image.asset(
+                        getSteeringWheelPicture(),
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Column(
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () {
+                    sendMessage('indicator-left');
+                  },
+                  child: const Icon(Icons.arrow_upward),
+                ),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () {
+                    sendMessage('indicator-right');
+                  },
+                  child: const Icon(Icons.arrow_downward),
+                ),
+              ),
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
   Column verticalView(double height) {
     return Column(
       children: [
@@ -137,18 +257,28 @@ class _ConnectionpageState extends State<Connectionpage> {
                       height: height * 0.05,
                       header: workingConnection(),
                     ),
-                    autoPilotButton(height),
-                    const SizedBox(
-                      height: 10,
+                    SizedBox(
+                      height: height * 0.11,
+                      child: Row(
+                        children: [
+                          Expanded(child: autoPilotButton(height)),
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          Expanded(child: joystickViewButton(height)),
+                        ],
+                      ),
                     ),
-                    joystickViewButton(height),
                     textDivider(
                       height: height * 0.05,
                       header: 'Controller',
                     ),
-                    controllerView(
-                      height: height * 0.3,
-                    ),
+                    if (joystickView)
+                      steeringWheel(height)
+                    else
+                      controllerView(
+                        height: height * 0.3,
+                      ),
                     textDivider(
                         height: height * 0.05, header: 'Connection Status'),
                     const SizedBox(
@@ -195,20 +325,21 @@ class _ConnectionpageState extends State<Connectionpage> {
 
   SizedBox joystickViewButton(double height) {
     return SizedBox(
-      height: height * 0.1,
-      width: double.infinity,
+      height: height * 0.11,
       child: ElevatedButton(
           style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           )),
           onPressed: () {
-            if (dn.isConnected) {
-              debugPrint('Joystick View');
-            }
+            debugPrint('Joystick View');
+            setState(() {
+              joystickView = !joystickView;
+              rotation = 0;
+            });
           },
-          child: const Text(
-            'Joystick View',
+          child: Text(
+            joystickView ? 'Joystick View' : 'Steering Wheel View',
           )),
     );
   }
@@ -217,33 +348,35 @@ class _ConnectionpageState extends State<Connectionpage> {
 
   Widget autoPilotButton(double height) {
     return SizedBox(
+        height: height * 0.11,
         child: ElevatedButton(
-      style: ElevatedButton.styleFrom(
-          shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-      )),
-      onPressed: () {},
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            const Text('Auto Pilot'),
-            Switch(
-              value: isAutoPilot,
-              onChanged: (value) {
-                if (dn.isConnected) {
-                  sendMessage(value ? 'auto-pilot-start' : 'auto-pilot-stop');
-                  setState(() {
-                    isAutoPilot = value;
-                    debugPrint('Auto Pilot: $isAutoPilot');
-                  });
-                }
-              },
+          style: ElevatedButton.styleFrom(
+              shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          )),
+          onPressed: () {},
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              children: [
+                const Text('Auto Pilot'),
+                Switch(
+                  value: isAutoPilot,
+                  onChanged: (value) {
+                    if (dn.isConnected) {
+                      sendMessage(
+                          value ? 'auto-pilot-start' : 'auto-pilot-stop');
+                      setState(() {
+                        isAutoPilot = value;
+                        debugPrint('Auto Pilot: $isAutoPilot');
+                      });
+                    }
+                  },
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
-    ));
+          ),
+        ));
   }
 
   Widget controllerButton({

@@ -72,11 +72,7 @@ class _MyHomePageState extends State<MyHomePage>
   Widget build(BuildContext context) {
     colorScheme = Theme.of(context).colorScheme;
     dn = Provider.of<DookieNotifier>(context);
-    // if (!dookieNotifier.databaseReady) {
-    //   init();
-    // }
     return loadingScreen();
-    // return BluetoothPage();
   }
 
   @override
@@ -138,9 +134,18 @@ class _MyHomePageState extends State<MyHomePage>
     return Scaffold(
         appBar: AppBar(
           backgroundColor: colorScheme.secondaryContainer,
-          title: Text(
-            widget.title,
-            style: TextStyle(color: colorScheme.onSecondaryContainer),
+          title: Row(
+            children: [
+              Image.asset(
+                'assets/icons/icon.png',
+                height: 40,
+              ),
+              const SizedBox(width: 10),
+              Text(
+                widget.title,
+                style: TextStyle(color: colorScheme.onSecondaryContainer),
+              ),
+            ],
           ),
         ),
         body: Center(
@@ -593,9 +598,18 @@ class _MainPageState extends State<MainPage> {
               drawer: menuDrawer(),
               appBar: AppBar(
                 backgroundColor: colorScheme.secondaryContainer,
-                title: Text(
-                  "Dookie Controls",
-                  style: TextStyle(color: colorScheme.onSecondaryContainer),
+                title: Row(
+                  children: [
+                    Image.asset(
+                      'assets/icons/icon.png',
+                      height: 40,
+                    ),
+                    const SizedBox(width: 10),
+                    Text(
+                      'Dookie Controls',
+                      style: TextStyle(color: colorScheme.onSecondaryContainer),
+                    ),
+                  ],
                 ),
                 leading: IconButton(
                   onPressed: () {
@@ -679,12 +693,20 @@ class _MainPageState extends State<MainPage> {
               color: Theme.of(context).colorScheme.secondaryContainer,
             ),
             padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 8.0),
-            child: Text(
-              'Dookie Controls',
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.onSecondaryContainer,
-                fontSize: 24,
-              ),
+            child: Column(
+              children: [
+                Text(
+                  'Dookie Controls',
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSecondaryContainer,
+                    fontSize: 24,
+                  ),
+                ),
+                Image.asset(
+                  'assets/icons/icon.png',
+                  height: 100,
+                )
+              ],
             ),
           ),
           menuButton(
