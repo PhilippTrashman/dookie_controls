@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import 'package:dookie_controls/bluetooth_serial/select_bonded_device_page.dart';
 import 'package:dookie_controls/dookie_notifier.dart';
@@ -161,12 +162,13 @@ class _ConnectionpageState extends State<Connectionpage> {
                               shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           )),
-                          onPressed: () {
+                          onPressed: () async {
                             // connectToDevice();
                             if (dn.isConnected) {
                               dn.disconnectFromDevice();
                             } else {
-                              connectToDevice();
+                              await handleConnectRequest();
+                              // connectToDevice();
                             }
                           },
                           child: Text(
@@ -422,6 +424,56 @@ class _ConnectionpageState extends State<Connectionpage> {
         : dn.isConnected
             ? 'Connected'
             : 'Not Connected';
+  }
+
+  Future handleConnectRequest() async {
+    await Permission.bluetoothScan.status.then((value) async {
+      debugPrint("-------!${value.isGranted}!-------");
+      if (value.isGranted) {
+        debugPrint('Bluetooth permission granted');
+        connectToDevice();
+      } else {
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: const Text('Bluetooth Permission'),
+                content: const Text(
+                    'This app requires bluetooth permission to connect to the device, please allow location and nearby devices permission to continue.'),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('Cancel'),
+                  ),
+                  TextButton(
+                    onPressed: () async {
+                      await openAppSettings().then((value) async {
+                        Navigator.of(context).pop();
+                        await Permission.bluetoothScan.status.then((value) {
+                          debugPrint("-------!${value.isGranted}!-------");
+                          if (value.isGranted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text(
+                                        'Bluetooth permission granted, please try again.')));
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text(
+                                        'Bluetooth permission is required to connect to the device.')));
+                          }
+                        });
+                      });
+                    },
+                    child: const Text('Open Settings'),
+                  ),
+                ],
+              );
+            });
+      }
+    });
   }
 
   void connectToDevice() async {
