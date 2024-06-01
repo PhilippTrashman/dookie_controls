@@ -568,63 +568,86 @@ class _PullWindowState extends State<PullWindow>
   @override
   Widget build(BuildContext context) {
     debugPrint('building pull window ${widget.data.bannerPath}');
-    return ScaleTransition(
-      scale: Tween<double>(begin: 0, end: 1).animate(
-        CurvedAnimation(
-          parent: _controller,
-          curve: Curves.easeOut,
+    return LayoutBuilder(builder: (context, constraints) {
+      bool isPortrait = constraints.maxHeight > constraints.maxWidth;
+
+      return ScaleTransition(
+        scale: Tween<double>(begin: 0, end: 1).animate(
+          CurvedAnimation(
+            parent: _controller,
+            curve: Curves.easeOut,
+          ),
         ),
-      ),
-      child: Dialog(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Text(
-                'Congratulations! You got:',
-                style: TextStyle(
-                  fontSize: 24,
-                ),
+        child: Dialog(
+          clipBehavior: Clip.antiAlias,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Stack(
+            children: [
+              Image.asset(
+                isPortrait ? widget.data.portraitPath : widget.data.bannerPath,
+                fit: BoxFit.cover,
+                height: double.infinity,
+                width: double.infinity,
+                alignment: Alignment.center,
               ),
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Image.asset(
-                  widget.data.bannerPath,
-                  fit: BoxFit.contain,
-                  alignment: Alignment.center,
-                ),
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: double.infinity,
+                    color: Colors.black.withOpacity(0.5),
+                    child: const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Text(
+                          'Congratulations! You got:',
+                          style: TextStyle(
+                            fontSize: 24,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const Expanded(child: SizedBox()),
+                  Container(
+                    color: Colors.black.withOpacity(0.55),
+                    child: Column(
+                      children: [
+                        Text(
+                          widget.data.name,
+                          style: const TextStyle(
+                            fontSize: 24,
+                          ),
+                        ),
+                        Text(
+                          widget.data.tier,
+                          style: const TextStyle(
+                            fontSize: 18,
+                          ),
+                        ),
+                        ButtonBar(
+                          alignment: MainAxisAlignment.center,
+                          children: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: const Text('Close'),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-            ),
-            Text(
-              widget.data.name,
-              style: const TextStyle(
-                fontSize: 24,
-              ),
-            ),
-            Text(
-              widget.data.tier,
-              style: const TextStyle(
-                fontSize: 18,
-              ),
-            ),
-            ButtonBar(
-              alignment: MainAxisAlignment.center,
-              children: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text('Close'),
-                ),
-              ],
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 
   @override
@@ -696,55 +719,65 @@ class GachaWidget extends StatelessWidget {
   }
 
   Widget gachaInfoScreen() {
-    return Dialog(
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(8),
-        child: Stack(
+    return LayoutBuilder(builder: (context, constraints) {
+      bool isPortrait = constraints.maxHeight > constraints.maxWidth;
+      return Dialog(
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: _horizontalWindow(isPortrait),
+        ),
+      );
+    });
+  }
+
+  Stack _horizontalWindow(bool isPortrait) {
+    return Stack(
+      children: [
+        Expanded(
+          child: Image.asset(
+            isPortrait ? data.portraitPath : data.bannerPath,
+            fit: BoxFit.cover,
+            height: double.infinity,
+            width: double.infinity,
+            alignment: Alignment.center,
+          ),
+        ),
+        Row(
           children: [
-            Expanded(
-              child: Image.asset(data.bannerPath,
-                  fit: BoxFit.contain, alignment: Alignment.center),
+            const Expanded(
+              flex: 4,
+              child: SizedBox(),
             ),
-            Row(
-              children: [
-                const Expanded(
-                  flex: 4,
-                  child: SizedBox(),
-                ),
-                Expanded(
-                  child: SizedBox.expand(
-                    child: Container(
-                      color: Colors.black.withOpacity(0.5),
-                      child: Column(
+            Container(
+              color: Colors.black.withOpacity(0.5),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Expanded(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                ...List.generate(
-                                    5, (index) => const Icon(Icons.star))
-                              ],
-                            ),
-                          ),
-                          Expanded(
-                              flex: 3,
-                              child: Column(
-                                children: [
-                                  Text(data.name),
-                                  Text(data.tier),
-                                ],
-                              )),
+                          ...List.generate(5, (index) => const Icon(Icons.star))
                         ],
                       ),
                     ),
-                  ),
+                    Expanded(
+                        flex: 3,
+                        child: Column(
+                          children: [
+                            Text(data.name),
+                            Text(data.tier),
+                          ],
+                        )),
+                  ],
                 ),
-              ],
+              ),
             ),
           ],
         ),
-      ),
+      ],
     );
   }
 }
