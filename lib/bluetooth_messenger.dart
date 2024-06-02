@@ -182,21 +182,13 @@ class _ConnectionpageState extends State<Connectionpage> {
           ),
           Column(
             children: [
-              Expanded(
-                child: controllerButton(
-                  startMessage: 'speed:100',
-                  stopMessage: 'stop',
-                  icon: Icons.double_arrow,
-                  degrees: 270,
-                ),
-              ),
               const SizedBox(
                 height: 10,
               ),
               Expanded(
                 child: controllerButton(
-                    startMessage: 'speed:50',
-                    stopMessage: 'stop',
+                    startMessage: 'direction:F',
+                    stopMessage: 'direction:S',
                     degrees: 270,
                     icon: Icons.arrow_forward_ios),
               ),
@@ -205,20 +197,14 @@ class _ConnectionpageState extends State<Connectionpage> {
               ),
               Expanded(
                 child: controllerButton(
-                    startMessage: 'speed:-50',
-                    stopMessage: 'stop',
+                    startMessage: 'direction:R',
+                    stopMessage: 'direction:S',
                     degrees: 90,
                     icon: Icons.arrow_forward_ios),
               ),
               const SizedBox(
                 height: 10,
               ),
-              Expanded(
-                  child: controllerButton(
-                      startMessage: 'speed:-100',
-                      stopMessage: 'stop',
-                      degrees: 90,
-                      icon: Icons.double_arrow)),
             ],
           )
         ],
@@ -233,7 +219,7 @@ class _ConnectionpageState extends State<Connectionpage> {
           flex: 2,
           child: ElevatedButton(
             onPressed: () {
-              sendMessage('indicator-left');
+              sendMessage('ind_left');
             },
             child: const Icon(Icons.arrow_back_ios),
           ),
@@ -253,7 +239,7 @@ class _ConnectionpageState extends State<Connectionpage> {
           flex: 2,
           child: ElevatedButton(
             onPressed: () {
-              sendMessage('indicator-right');
+              sendMessage('ind_right');
             },
             child: const Icon(Icons.arrow_forward_ios),
           ),
@@ -404,7 +390,9 @@ class _ConnectionpageState extends State<Connectionpage> {
                         )),
                         onPressed: () {
                           sendMessage('steering:0');
-                          sendMessage('auto-pilot-stop');
+                          if (isAutoPilot) {
+                            sendMessage('autonomous');
+                          }
                           setState(() {
                             _lastMessage = 'steering:0';
                             _lastSentStep = null;
@@ -453,8 +441,7 @@ class _ConnectionpageState extends State<Connectionpage> {
                   value: isAutoPilot,
                   onChanged: (value) {
                     if (dn.isConnected) {
-                      sendMessage(
-                          value ? 'auto-pilot-start' : 'auto-pilot-stop');
+                      sendMessage('autonomous');
                       setState(() {
                         isAutoPilot = value;
                         debugPrint('Auto Pilot: $isAutoPilot');
