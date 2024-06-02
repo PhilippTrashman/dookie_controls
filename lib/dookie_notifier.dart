@@ -1,3 +1,4 @@
+import 'package:dookie_controls/models/skin_save.dart';
 import 'package:flutter/material.dart';
 import 'package:dookie_controls/imports.dart';
 import 'package:dookie_controls/database.dart';
@@ -89,6 +90,26 @@ class DookieNotifier extends ChangeNotifier {
     }
   }
 
+  bool buySkin(SkinShopData data) {
+    if (selectedUser != null &&
+        selectedUser!.dookieSave.dookieAmount >= data.price) {
+      debugPrint(
+          'Skin bought for ${data.price} dookies by ${selectedUser!.name} ${data.name}');
+      selectedUser!.dookieSave.dookieAmount -= data.price;
+      selectedUser!.unlockedSkins.unlockSkin(data.id);
+      notifyListeners();
+      return true;
+    }
+    return false;
+  }
+
+  void applySkin(int skinId) {
+    if (selectedUser != null) {
+      selectedUser!.unlockedSkins.applySkin(skinId);
+      notifyListeners();
+    }
+  }
+
   void init(BuildContext context) {
     colorScheme = Theme.of(context).colorScheme;
   }
@@ -136,6 +157,34 @@ class DookieNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
+  void addDookies(double amount) {
+    if (selectedUser != null) {
+      selectedUser!.dookieSave.addDookies(amount);
+      notifyListeners();
+    }
+  }
+
+  void resetDookieSave() {
+    if (selectedUser != null) {
+      selectedUser!.dookieSave.reset();
+      notifyListeners();
+    }
+  }
+
+  void resetGachaSave() {
+    if (selectedUser != null) {
+      selectedUser!.gachaSave.reset();
+      notifyListeners();
+    }
+  }
+
+  void resetUnlockedSkins() {
+    if (selectedUser != null) {
+      selectedUser!.unlockedSkins.reset();
+      notifyListeners();
+    }
+  }
+
   void addUser(
       {required String name,
       required String lastName,
@@ -154,7 +203,8 @@ class DookieNotifier extends ChangeNotifier {
         dookieSave: dookieBaseSave(userId),
         gachaSave: GachaSave(id: userId, gachas: {}),
         devMode: false,
-        isCheater: false);
+        isCheater: false,
+        unlockedSkins: UnlockedSkins(id: userId, unlockedSkins: []));
     writeUsers();
     notifyListeners();
   }

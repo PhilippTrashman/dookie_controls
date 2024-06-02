@@ -33,6 +33,22 @@ class _Dookie3DViewerState extends State<Dookie3DViewer>
     _skinShopDataFuture = loadAssetImages();
   }
 
+  String? resolveShownCar() {
+    final id = dn.selectedUser!.unlockedSkins.lastDisplayedSkin;
+    switch (id) {
+      case 8:
+        return 'assets/models/asuka.glb';
+      case 16:
+        return 'assets/models/gojo.glb';
+      case 29:
+        return 'assets/models/t3itasha.glb';
+      case 51:
+        return 'assets/models/fenrys.glb';
+      default:
+        return null;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     if (Platform.isAndroid || Platform.isIOS) {
@@ -42,7 +58,9 @@ class _Dookie3DViewerState extends State<Dookie3DViewer>
       ]);
     }
     dn = Provider.of<DookieNotifier>(context);
+
     colorScheme = Theme.of(context).colorScheme;
+    final shownCar = resolveShownCar();
     return Stack(
       children: [
         Column(
@@ -56,14 +74,31 @@ class _Dookie3DViewerState extends State<Dookie3DViewer>
                 IconButton(
                     onPressed: () => controller.cameraTarget(0, 0, 0),
                     icon: const Icon(Icons.change_circle_outlined)),
+                IconButton(
+                    onPressed: () => controller.cameraTarget(0, 0, 0),
+                    icon: const Icon(Icons.change_circle_outlined)),
               ],
             )),
-            Expanded(
-              flex: 7,
-              child: O3D.asset(
-                src: 'assets/models/t1itasha.glb',
-                controller: controller,
-              ),
+            Consumer<DookieNotifier>(
+              builder: (context, modelProvider, child) {
+                return modelProvider
+                            .selectedUser!.unlockedSkins.lastDisplayedSkin !=
+                        null
+                    ? Expanded(
+                        flex: 7,
+                        child: O3D.asset(
+                          key: ValueKey(shownCar), // Change this line
+                          src: shownCar!,
+                          controller: controller,
+                        ),
+                      )
+                    : Expanded(
+                        flex: 7,
+                        child: const Center(
+                          child: Text('No Skin Selected'),
+                        ),
+                      );
+              },
             ),
             Expanded(
                 child: SizedBox.expand(
@@ -165,7 +200,8 @@ class _Dookie3DViewerState extends State<Dookie3DViewer>
                         ),
                         itemCount: snapshot.data!.length,
                         itemBuilder: (context, index) {
-                          var item = snapshot.data!.values.elementAt(index);
+                          var items = sortSkinShop(snapshot.data!);
+                          var item = items[index];
                           return SkinShopImage(
                             data: item,
                             borderColor: colorScheme.onSecondary,
@@ -185,4 +221,10 @@ class _Dookie3DViewerState extends State<Dookie3DViewer>
       },
     );
   }
+}
+
+List<SkinShopData> sortSkinShop(Map<int, SkinShopData> data) {
+  var items = data.values.toList();
+  items.sort((a, b) => a.tierGroup.compareTo(b.tierGroup));
+  return items;
 }

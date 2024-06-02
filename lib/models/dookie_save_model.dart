@@ -221,8 +221,23 @@ class DookieSave {
       required this.upgrades,
       required this.currentIncrement});
 
+  void reset() {
+    dookieAmount = 0;
+    dookiesPerSecond = 0;
+    dookieMultiplier = 1;
+    upgrades.forEach((element) {
+      element.amount = 0;
+      element.amountGenerated = 0;
+    });
+    currentIncrement = 0;
+  }
+
   void incrementDookieAmount() {
     dookieAmount += 1 * dookieMultiplier;
+  }
+
+  void addDookies(double amount) {
+    dookieAmount += amount;
   }
 
   void generateUpgradeDookies() {

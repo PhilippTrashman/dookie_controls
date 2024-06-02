@@ -83,13 +83,92 @@ class _SettingsMenuState extends State<SettingsMenu> {
   List<Widget> _userTiles() {
     return [
       ListTile(
-        title: const Text('Option 1'),
-        onTap: () {},
+        title: const Text('Reset Dookie Clicker'),
+        onTap: () {
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  title: const Text('Reset Dookie Clicker'),
+                  content: const Text(
+                      'Are you sure you want to reset your progress?'),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        _dn.resetDookieSave();
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text('Yes'),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text('No'),
+                    ),
+                  ],
+                );
+              });
+        },
       ),
       ListTile(
-        title: const Text('Option 2'),
-        onTap: () {},
+        title: const Text('Reset Gacha'),
+        onTap: () {
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  title: const Text('Reset Gacha'),
+                  content: const Text(
+                      'Are you sure you want to reset your gacha progress?'),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        _dn.resetGachaSave();
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text('Yes'),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text('No'),
+                    ),
+                  ],
+                );
+              });
+        },
       ),
+      ListTile(
+        title: const Text('Reset Skins'),
+        onTap: () {
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  title: const Text('Reset Skins'),
+                  content: const Text(
+                      'Are you sure you want to reset your unlocked skins?'),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        _dn.resetUnlockedSkins();
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text('Yes'),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text('No'),
+                    ),
+                  ],
+                );
+              });
+        },
+      )
     ];
   }
 
@@ -116,6 +195,56 @@ class _SettingsMenuState extends State<SettingsMenu> {
               });
             },
           )),
+      ListTile(
+          title: Text("Dookie Cheater"),
+          onTap: () {
+            showDialog(
+                context: context,
+                builder: (context) {
+                  final TextEditingController _controller =
+                      TextEditingController();
+                  return AlertDialog(
+                    title: const Text("Dookie Cheater"),
+                    content: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          TextField(
+                            controller: _controller,
+                            decoration: const InputDecoration(
+                              labelText: "Amount",
+                            ),
+                            onChanged: (value) {
+                              if (value.isNotEmpty) {
+                                _controller.text = value;
+                              }
+                            },
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              if (_controller.text.isNotEmpty) {
+                                debugPrint(_controller.text);
+                                _dn.addDookies(double.parse(_controller.text));
+                                Navigator.of(context).pop();
+                              }
+                            },
+                            child: const Text("Add"),
+                          ),
+                        ],
+                      ),
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text("Close"),
+                      ),
+                    ],
+                  );
+                });
+          }),
     ];
   }
 }

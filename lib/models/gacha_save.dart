@@ -31,6 +31,10 @@ class GachaSave {
     );
   }
 
+  void reset() {
+    gachas.clear();
+  }
+
   GachaSaveObject? getGacha(int id) {
     return gachas[id];
   }

@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:audioplayers/audioplayers.dart';
+import 'package:dookie_controls/dookie_notifier.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -25,6 +27,33 @@ class SkinShopData {
     this.soundPath,
     required this.tier,
   });
+
+  int get tierGroup {
+    switch (tier) {
+      case 'Free':
+        return 10;
+      case 'Trash':
+        return 9;
+      case 'Common':
+        return 8;
+      case 'Uncommon':
+        return 7;
+      case 'Rare':
+        return 6;
+      case 'Epic':
+        return 5;
+      case 'Legendary':
+        return 4;
+      case 'Mythical':
+        return 3;
+      case 'Godly':
+        return 2;
+      case 'GOATED':
+        return 1;
+      default:
+        return 0;
+    }
+  }
 
   int get price {
     switch (tier) {
@@ -63,7 +92,11 @@ class SkinShopData {
   }
 }
 
-class SkinShopImage extends StatelessWidget {
+bool purchasableSkin(String name) {
+  return ["Go Jo", "Asuka", "Mikasa", "Fenrys"].contains(name);
+}
+
+class SkinShopImage extends StatefulWidget {
   final SkinShopData data;
   final Color borderColor;
   final Color containerColor;
@@ -75,6 +108,13 @@ class SkinShopImage extends StatelessWidget {
       super.key});
 
   @override
+  State<SkinShopImage> createState() => _SkinShopImageState();
+}
+
+class _SkinShopImageState extends State<SkinShopImage> {
+  late DookieNotifier dn;
+
+  @override
   Widget build(BuildContext context) {
     if (Platform.isAndroid || Platform.isIOS) {
       SystemChrome.setPreferredOrientations([
@@ -82,24 +122,30 @@ class SkinShopImage extends StatelessWidget {
         DeviceOrientation.portraitDown,
       ]);
     }
+    dn = Provider.of<DookieNotifier>(context);
 
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: GestureDetector(
         onTap: () {
-          showDialog(
-            barrierDismissible: data.name != 'Sata Andagi',
-            context: context,
-            builder: (context) {
-              return purchasePopUp(context);
-            },
-          );
+          if (dn.selectedUser!.unlockedSkins.isSkinUnlocked(widget.data.id)) {
+            showDialog(
+                context: context, builder: (context) => applyPopUp(context));
+          } else {
+            showDialog(
+              barrierDismissible: widget.data.name != 'Sata Andagi',
+              context: context,
+              builder: (context) {
+                return purchasePopUp(context);
+              },
+            );
+          }
         },
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
-              color: borderColor,
+              color: widget.borderColor,
               width: 2,
             ),
           ),
@@ -108,7 +154,7 @@ class SkinShopImage extends StatelessWidget {
             child: Stack(
               children: [
                 Image.asset(
-                  data.imagePath,
+                  widget.data.imagePath,
                   fit: BoxFit.fill,
                 ),
                 Column(
@@ -125,11 +171,11 @@ class SkinShopImage extends StatelessWidget {
                             children: [
                               Expanded(
                                 child: Text(
-                                  data.name,
+                                  widget.data.name,
                                   textAlign: TextAlign.center,
                                 ),
                               ),
-                              Expanded(child: Text(data.tier)),
+                              Expanded(child: Text(widget.data.tier)),
                             ],
                           ),
                         ),
@@ -148,8 +194,8 @@ class SkinShopImage extends StatelessWidget {
   Widget purchasePopUp(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
       bool isPortrait = constraints.maxHeight > constraints.maxWidth;
-      if (data.tier == 'Free') {
-        return SataAndagiPopUp(data: data);
+      if (widget.data.tier == 'Free') {
+        return SataAndagiPopUp(data: widget.data);
       }
       return Dialog(
         clipBehavior: Clip.antiAlias,
@@ -160,7 +206,7 @@ class SkinShopImage extends StatelessWidget {
           alignment: Alignment.center,
           children: [
             Image.asset(
-              isPortrait ? data.portraitPath : data.bannerPath,
+              isPortrait ? widget.data.portraitPath : widget.data.bannerPath,
               fit: BoxFit.cover,
               height: double.infinity,
               width: double.infinity,
@@ -182,13 +228,79 @@ class SkinShopImage extends StatelessWidget {
     });
   }
 
+  Widget applyPopUp(BuildContext context) {
+    return LayoutBuilder(builder: (context, constraints) {
+      bool isPortrait = constraints.maxHeight > constraints.maxWidth;
+      return Dialog(
+        clipBehavior: Clip.antiAlias,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Image.asset(
+              isPortrait ? widget.data.portraitPath : widget.data.bannerPath,
+              fit: BoxFit.cover,
+              height: double.infinity,
+              width: double.infinity,
+              alignment: Alignment.center,
+            ),
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Expanded(
+                  flex: 6,
+                  child: SizedBox(),
+                ),
+                Expanded(
+                    child: Container(
+                        color: Colors.black.withOpacity(0.5),
+                        child: Column(
+                          children: [
+                            Text(
+                              widget.data.name,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            ButtonBar(
+                              alignment: MainAxisAlignment.center,
+                              children: [
+                                TextButton(
+                                  onPressed: () {
+                                    dn.applySkin(widget.data.id);
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: const Text('Apply'),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: const Text('Cancel'),
+                                ),
+                              ],
+                            ),
+                          ],
+                        )))
+              ],
+            ),
+          ],
+        ),
+      );
+    });
+  }
+
   Container buyMessage(BuildContext context) {
     return Container(
       color: Colors.black.withOpacity(0.5),
       child: Column(
         children: [
           Text(
-            data.name,
+            widget.data.name,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 24,
@@ -200,7 +312,7 @@ class SkinShopImage extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                data.message,
+                widget.data.message,
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 18,
@@ -217,9 +329,28 @@ class SkinShopImage extends StatelessWidget {
                 children: [
                   TextButton(
                     onPressed: () async {
-                      final Uri url = Uri.parse("https://www.ea.com/de-de");
-                      if (!await launchUrl(url)) {
-                        throw Exception('Could not launch $url');
+                      if (purchasableSkin(widget.data.name)) {
+                        final result = dn.buySkin(widget.data);
+                        if (!result) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Not enough Dookie Points'),
+                            ),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content:
+                                  Text('Skin Purchased ${widget.data.name}'),
+                            ),
+                          );
+                        }
+                        Navigator.of(context).pop();
+                      } else {
+                        final Uri url = Uri.parse("https://www.ea.com/de-de");
+                        if (!await launchUrl(url)) {
+                          throw Exception('Could not launch $url');
+                        }
                       }
                     },
                     child: const Text('Purchase'),
