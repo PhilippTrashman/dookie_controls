@@ -240,7 +240,7 @@ class SkinShopImage extends StatelessWidget {
   }
 }
 
-Future<List<SkinShopData>> loadAssetImages() async {
+Future<Map<int, SkinShopData>> loadAssetImages() async {
   final jsonString = await rootBundle.loadString('AssetManifest.json');
   final Map<String, dynamic> manifestMap = json.decode(jsonString);
 
@@ -251,30 +251,34 @@ Future<List<SkinShopData>> loadAssetImages() async {
   const indexJsonPath = 'assets/the_goon_folder/goon_index.json';
   final indexJsonString = await rootBundle.loadString(indexJsonPath);
   final Map<String, dynamic> indexJson = json.decode(indexJsonString);
-  final images = indexJson.entries.map((entry) {
-    String? soundPath;
-    String path = "assets/the_goon_folder/icons/${entry.value['filepath']}";
-    String bannerPath =
-        "assets/the_goon_folder/banners/${entry.value['filepath']}";
-    String portraitPath =
-        "assets/the_goon_folder/portraits/${entry.value['filepath']}";
-    String name = entry.key;
-    String tier = entry.value["tier"];
-    if (path.contains('sata_andagi')) {
-      soundPath = 'assets/sounds/sata_andagi.mp3';
-    }
-    final int id = entry.value['id'];
+  final images = Map<int, SkinShopData>.fromIterable(
+    indexJson.entries,
+    key: (entry) => entry.value['id'],
+    value: (entry) {
+      String? soundPath;
+      String path = "assets/the_goon_folder/icons/${entry.value['filepath']}";
+      String bannerPath =
+          "assets/the_goon_folder/banners/${entry.value['filepath']}";
+      String portraitPath =
+          "assets/the_goon_folder/portraits/${entry.value['filepath']}";
+      String name = entry.key;
+      String tier = entry.value["tier"];
+      if (path.contains('sata_andagi')) {
+        soundPath = 'assets/sounds/sata_andagi.mp3';
+      }
+      final int id = entry.value['id'];
 
-    return SkinShopData(
-      id: id,
-      name: name,
-      imagePath: path,
-      bannerPath: bannerPath,
-      portraitPath: portraitPath,
-      soundPath: soundPath,
-      tier: tier,
-    );
-  }).toList();
+      return SkinShopData(
+        id: id,
+        name: name,
+        imagePath: path,
+        bannerPath: bannerPath,
+        portraitPath: portraitPath,
+        soundPath: soundPath,
+        tier: tier,
+      );
+    },
+  );
 
   return images;
 }

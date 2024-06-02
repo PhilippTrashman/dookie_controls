@@ -20,7 +20,7 @@ class _Dookie3DViewerState extends State<Dookie3DViewer>
   O3DController controller = O3DController();
   late ColorScheme colorScheme;
   double extend = 0;
-  late Future<List<SkinShopData>> _skinShopDataFuture;
+  late Future<Map<int, SkinShopData>> _skinShopDataFuture;
   late AnimationController _animController;
   late DookieNotifier dn;
   @override
@@ -112,9 +112,9 @@ class _Dookie3DViewerState extends State<Dookie3DViewer>
     }));
   }
 
-  FutureBuilder<List<SkinShopData>> shopData(
+  FutureBuilder<Map<int, SkinShopData>> shopData(
       {required ScrollController? scrollController}) {
-    return FutureBuilder<List<SkinShopData>>(
+    return FutureBuilder<Map<int, SkinShopData>>(
       future: _skinShopDataFuture,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
@@ -158,22 +158,20 @@ class _Dookie3DViewerState extends State<Dookie3DViewer>
                       ),
                     ),
                     Expanded(
-                      child: SizedBox.expand(
-                        child: GridView.builder(
-                          controller: scrollController,
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: crossAxisCount,
-                          ),
-                          itemCount: snapshot.data!.length,
-                          itemBuilder: (context, index) {
-                            return SkinShopImage(
-                              data: snapshot.data![index],
-                              borderColor: colorScheme.onSecondary,
-                              containerColor: colorScheme.secondaryContainer,
-                            );
-                          },
+                      child: GridView.builder(
+                        controller: scrollController,
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: crossAxisCount,
                         ),
+                        itemCount: snapshot.data!.length,
+                        itemBuilder: (context, index) {
+                          var item = snapshot.data!.values.elementAt(index);
+                          return SkinShopImage(
+                            data: item,
+                            borderColor: colorScheme.onSecondary,
+                            containerColor: colorScheme.secondaryContainer,
+                          );
+                        },
                       ),
                     ),
                   ],

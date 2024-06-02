@@ -46,7 +46,7 @@ class SkibidiOpener extends StatefulWidget {
 class _SkibidiOpenerState extends State<SkibidiOpener> {
   late DookieNotifier dn;
   late ColorScheme colorScheme;
-  late Future<List<SkinShopData>> _skinShopDataFuture;
+  late Future<Map<int, SkinShopData>> _skinShopDataFuture;
   late bool isCheater;
   bool _showGacha = false;
   bool _gachaRunning = false;
@@ -61,19 +61,15 @@ class _SkibidiOpenerState extends State<SkibidiOpener> {
     _skinShopDataFuture = loadAssetImages();
   }
 
-  List<GachaWidget> gachaTexts(List<SkinShopData> list) {
-    final Map<int, SkinShopData> gachaItems =
-        list.asMap().map((k, v) => MapEntry(k + 1, v));
+  List<GachaWidget> gachaTexts(Map<int, SkinShopData> list) {
     final List<GachaWidget> gachaContainer = [];
 
     final userGachas = dn.selectedUser!.gachaSave.gachas;
 
     for (final item in userGachas.values) {
-      if (gachaItems.containsKey(item.id)) {
+      if (list.containsKey(item.id)) {
         gachaContainer.add(GachaWidget(
-            data: gachaItems[item.id]!,
-            gachaSave: item,
-            colorScheme: colorScheme));
+            data: list[item.id]!, gachaSave: item, colorScheme: colorScheme));
       }
     }
     return gachaContainer;
@@ -104,7 +100,7 @@ class _SkibidiOpenerState extends State<SkibidiOpener> {
   }
 
   Stack mainPage(
-      BuildContext context, AsyncSnapshot<List<SkinShopData>> snapshot) {
+      BuildContext context, AsyncSnapshot<Map<int, SkinShopData>> snapshot) {
     return Stack(
       children: [
         Column(
@@ -150,7 +146,7 @@ class _SkibidiOpenerState extends State<SkibidiOpener> {
   }
 
   Column bottomButtons(
-      BuildContext context, AsyncSnapshot<List<SkinShopData>> snapshot) {
+      BuildContext context, AsyncSnapshot<Map<int, SkinShopData>> snapshot) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -211,7 +207,7 @@ class _SkibidiOpenerState extends State<SkibidiOpener> {
     );
   }
 
-  Container userGachas(AsyncSnapshot<List<SkinShopData>> snapshot) {
+  Container userGachas(AsyncSnapshot<Map<int, SkinShopData>> snapshot) {
     return Container(
         decoration: BoxDecoration(
           color: Colors.black.withOpacity(0.25),
@@ -234,10 +230,12 @@ class _SkibidiOpenerState extends State<SkibidiOpener> {
         )));
   }
 
-  List<SkinShopData> getGachaPull(AsyncSnapshot<List<SkinShopData>> snapshot) {
+  List<SkinShopData> getGachaPull(
+      AsyncSnapshot<Map<int, SkinShopData>> snapshot) {
     final rng = Random();
     final pull = <SkinShopData>[];
-    final weights = snapshot.data!.map((e) => getTierNumber(e.tier)).toList();
+    final weights =
+        snapshot.data!.values.map((e) => getTierNumber(e.tier)).toList();
     final weightsSum = weights.reduce((value, element) => value + element);
 
     final tierResults = <String, int>{};
@@ -245,15 +243,15 @@ class _SkibidiOpenerState extends State<SkibidiOpener> {
     for (var i = 0; i < switchAmount + 2; i++) {
       var randomNum = rng.nextInt(weightsSum);
 
-      for (var j = 0; j < snapshot.data!.length; j++) {
+      for (final j in snapshot.data!.keys) {
         if (randomNum < weights[j]) {
-          pull.add(snapshot.data![j]);
+          pull.add(snapshot.data![j]!);
 
-          if (tierResults.containsKey(snapshot.data![j].tier)) {
-            tierResults[snapshot.data![j].tier] =
-                tierResults[snapshot.data![j].tier]! + 1;
+          if (tierResults.containsKey(snapshot.data![j]!.tier)) {
+            tierResults[snapshot.data![j]!.tier] =
+                tierResults[snapshot.data![j]!.tier]! + 1;
           } else {
-            tierResults[snapshot.data![j].tier] = 1;
+            tierResults[snapshot.data![j]!.tier] = 1;
           }
 
           break;
@@ -269,7 +267,7 @@ class _SkibidiOpenerState extends State<SkibidiOpener> {
   final int _payAmount = 249;
 
   void buttonLogic(BuildContext context, bool isChinese,
-      AsyncSnapshot<List<SkinShopData>> snapshot) {
+      AsyncSnapshot<Map<int, SkinShopData>> snapshot) {
     Navigator.of(context).pop();
     if (dn.selectedUser != null) {
       if (dn.selectedUser!.dookieSave.dookieAmount >= _payAmount || isCheater) {
@@ -330,7 +328,7 @@ class _SkibidiOpenerState extends State<SkibidiOpener> {
   Widget? _leftImage;
   Widget? _rightImage;
 
-  Widget gachaShop(AsyncSnapshot<List<SkinShopData>> snapshot) {
+  Widget gachaShop(AsyncSnapshot<Map<int, SkinShopData>> snapshot) {
     return Container(
       width: 500,
       decoration: BoxDecoration(
@@ -428,7 +426,7 @@ class _SkibidiOpenerState extends State<SkibidiOpener> {
   }
 
   Widget buyMessage(
-      BuildContext context, AsyncSnapshot<List<SkinShopData>> snapshot) {
+      BuildContext context, AsyncSnapshot<Map<int, SkinShopData>> snapshot) {
     int payAmount = isCheater ? 0 : _payAmount;
     return Dialog(
       clipBehavior: Clip.antiAlias,
@@ -497,9 +495,9 @@ class _SkibidiOpenerState extends State<SkibidiOpener> {
     );
   }
 
-  Widget addCheaterMode(List<SkinShopData> list) {
+  Widget addCheaterMode(Map<int, SkinShopData> list) {
     List<ListTile> tiles() {
-      return list
+      return list.values
           .map((e) => ListTile(
                 title: Text(e.name),
                 subtitle: Text(e.tier),
