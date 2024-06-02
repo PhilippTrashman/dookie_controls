@@ -234,29 +234,31 @@ class _SkibidiOpenerState extends State<SkibidiOpener> {
       AsyncSnapshot<Map<int, SkinShopData>> snapshot) {
     final rng = Random();
     final pull = <SkinShopData>[];
-    final weights =
-        snapshot.data!.values.map((e) => getTierNumber(e.tier)).toList();
-    final weightsSum = weights.reduce((value, element) => value + element);
+    final weights = {
+      for (var e in snapshot.data!.values) e.id: getTierNumber(e.tier)
+    };
+    final weightsSum =
+        weights.values.reduce((value, element) => value + element);
 
     final tierResults = <String, int>{};
 
     for (var i = 0; i < switchAmount + 2; i++) {
       var randomNum = rng.nextInt(weightsSum);
 
-      for (final j in snapshot.data!.keys) {
-        if (randomNum < weights[j]) {
-          pull.add(snapshot.data![j]!);
+      for (final id in snapshot.data!.keys) {
+        if (randomNum < weights[id]!) {
+          pull.add(snapshot.data![id]!);
 
-          if (tierResults.containsKey(snapshot.data![j]!.tier)) {
-            tierResults[snapshot.data![j]!.tier] =
-                tierResults[snapshot.data![j]!.tier]! + 1;
+          if (tierResults.containsKey(snapshot.data![id]!.tier)) {
+            tierResults[snapshot.data![id]!.tier] =
+                tierResults[snapshot.data![id]!.tier]! + 1;
           } else {
-            tierResults[snapshot.data![j]!.tier] = 1;
+            tierResults[snapshot.data![id]!.tier] = 1;
           }
 
           break;
         } else {
-          randomNum -= weights[j];
+          randomNum -= weights[id]!;
         }
       }
     }
