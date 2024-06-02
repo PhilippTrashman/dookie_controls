@@ -65,6 +65,11 @@ class DookieNotifier extends ChangeNotifier {
   bool isDisconnecting = false;
   String serverName = '';
 
+  double rotation = 0;
+  int? lastSentStep;
+  String lastMessage = 'steering:0';
+  bool isAutoPilot = false;
+
   JsonDatabase jsonDatabase = JsonDatabase();
 
   Future<String> readUsers() async {

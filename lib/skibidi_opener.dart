@@ -175,8 +175,7 @@ class _SkibidiOpenerState extends State<SkibidiOpener> {
                 child: Text(
                   'Open Case',
                   textAlign: TextAlign.center,
-                  style:
-                      TextStyle(color: colorScheme.onBackground, fontSize: 20),
+                  style: TextStyle(color: colorScheme.onSurface, fontSize: 20),
                 ),
               ),
             ),
@@ -201,8 +200,8 @@ class _SkibidiOpenerState extends State<SkibidiOpener> {
                   child: Text(
                     'Cheater Mode',
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                        color: colorScheme.onBackground, fontSize: 20),
+                    style:
+                        TextStyle(color: colorScheme.onSurface, fontSize: 20),
                   ),
                 ),
               ),
@@ -733,14 +732,12 @@ class GachaWidget extends StatelessWidget {
   Stack _horizontalWindow(bool isPortrait) {
     return Stack(
       children: [
-        Expanded(
-          child: Image.asset(
-            isPortrait ? data.portraitPath : data.bannerPath,
-            fit: BoxFit.cover,
-            height: double.infinity,
-            width: double.infinity,
-            alignment: Alignment.center,
-          ),
+        Image.asset(
+          isPortrait ? data.portraitPath : data.bannerPath,
+          fit: BoxFit.cover,
+          height: double.infinity,
+          width: double.infinity,
+          alignment: Alignment.center,
         ),
         Row(
           children: [

@@ -407,7 +407,7 @@ class _MyHomePageState extends State<MyHomePage>
               child: ElevatedButton(
                 style: ButtonStyle(
                   backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.transparent),
+                      WidgetStateProperty.all<Color>(Colors.transparent),
                 ),
                 onPressed: login,
                 child: selectedUser != null

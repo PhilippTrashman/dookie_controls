@@ -341,7 +341,6 @@ class _ConnectionpageState extends State<Connectionpage> {
                     ),
                     SizedBox(
                       width: double.infinity,
-                      height: height * 0.11,
                       child: autoPilotButton(height),
                     ),
                     textDivider(
@@ -421,34 +420,33 @@ class _ConnectionpageState extends State<Connectionpage> {
 
   Widget autoPilotButton(double height) {
     return SizedBox(
-        height: height * 0.11,
         child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-              shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          )),
-          onPressed: () {},
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                const Text('Auto Pilot'),
-                Switch(
-                  value: dn.isAutoPilot,
-                  onChanged: (value) {
-                    if (dn.isConnected) {
-                      sendMessage('autonomous');
-                      setState(() {
-                        dn.isAutoPilot = value;
-                        debugPrint('Auto Pilot: ${dn.isAutoPilot}');
-                      });
-                    }
-                  },
-                ),
-              ],
+      style: ElevatedButton.styleFrom(
+          shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      )),
+      onPressed: () {},
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            const Text('Auto Pilot'),
+            Switch(
+              value: dn.isAutoPilot,
+              onChanged: (value) {
+                if (dn.isConnected) {
+                  sendMessage('autonomous');
+                  setState(() {
+                    dn.isAutoPilot = value;
+                    debugPrint('Auto Pilot: ${dn.isAutoPilot}');
+                  });
+                }
+              },
             ),
-          ),
-        ));
+          ],
+        ),
+      ),
+    ));
   }
 
   Widget controllerButton({
