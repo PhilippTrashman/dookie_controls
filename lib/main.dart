@@ -11,6 +11,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:dookie_controls/dookie_clicker.dart';
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:dookie_controls/model_viewer.dart';
 import 'package:dookie_controls/skibidi_opener.dart';
@@ -19,6 +20,15 @@ import 'package:dookie_controls/info_page.dart';
 
 void main() {
   runApp(const MyApp());
+}
+
+class MyCustomScrollBehavior extends MaterialScrollBehavior {
+  // Override behavior methods and getters like dragDevices
+  @override
+  Set<PointerDeviceKind> get dragDevices => {
+        PointerDeviceKind.touch,
+        PointerDeviceKind.mouse,
+      };
 }
 
 class MyApp extends StatelessWidget {
@@ -35,6 +45,7 @@ class MyApp extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (context) => DookieNotifier(),
       child: MaterialApp(
+        scrollBehavior: MyCustomScrollBehavior(),
         title: 'Dookie Controls',
         theme: ThemeData(
           useMaterial3: true,

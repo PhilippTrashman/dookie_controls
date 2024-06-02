@@ -150,8 +150,8 @@ if __name__ == '__main__':
             icon_folder,
             aspect_ratio=1, 
             target_size=(255, 255))
-        # convert_images_to_jpeg(banner_folder,)
-        # convert_images_to_jpeg(portraits_folder, aspect_ratio=9/16, target_size=(720, 1280))
+        convert_images_to_jpeg(banner_folder,)
+        convert_images_to_jpeg(portraits_folder, aspect_ratio=9/16, target_size=(720, 1280))
 
         generate_index(icon_folder, base)
     else:

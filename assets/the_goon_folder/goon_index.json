@@ -89,6 +89,12 @@
         "tier": "Epic",
         "filepath": "esdeath.jpeg"
     },
+    "Fenrys": {
+        "id": 51,
+        "name": "Fenrys",
+        "tier": "Mythical",
+        "filepath": "fenrys.jpeg"
+    },
     "Go Jo": {
         "id": 16,
         "name": "Go Jo",

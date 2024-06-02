@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -367,12 +368,14 @@ class _ConnectionpageState extends State<Connectionpage> {
                             borderRadius: BorderRadius.circular(10),
                           )),
                           onPressed: () async {
-                            // connectToDevice();
-                            if (dn.isConnected) {
-                              dn.disconnectFromDevice();
-                            } else {
-                              await handleConnectRequest();
+                            if (Platform.isAndroid) {
                               // connectToDevice();
+                              if (dn.isConnected) {
+                                dn.disconnectFromDevice();
+                              } else {
+                                await handleConnectRequest();
+                                // connectToDevice();
+                              }
                             }
                           },
                           child: Text(
@@ -610,17 +613,5 @@ class _ConnectionpageState extends State<Connectionpage> {
         setState(() {});
       }
     }
-  }
-
-  Widget connectionButton() {
-    return ElevatedButton(
-      onPressed: () {
-        debugPrint('Connecting to Bluetooth');
-      },
-      child: Icon(
-        Icons.bluetooth_searching,
-        color: Theme.of(context).colorScheme.onPrimaryContainer,
-      ),
-    );
   }
 }
