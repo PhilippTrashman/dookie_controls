@@ -139,8 +139,6 @@ class _ConnectionpageState extends State<Connectionpage> {
     );
   }
 
-  double rotation = 0;
-
   String getSteeringWheelPicture() {
     switch (dn.selectedUser?.carBrand.id) {
       case 1:
@@ -249,9 +247,6 @@ class _ConnectionpageState extends State<Connectionpage> {
     );
   }
 
-  int? _lastSentStep;
-  String _lastMessage = 'steering:0';
-
   Stack _steeringWheel() {
     return Stack(
       children: [
@@ -261,28 +256,28 @@ class _ConnectionpageState extends State<Connectionpage> {
               child: GestureDetector(
                 onPanUpdate: (details) {
                   setState(() {
-                    double newRotation = rotation + details.delta.dx / 100;
+                    double newRotation = dn.rotation + details.delta.dx / 100;
                     if (newRotation < -0.75) {
                       newRotation = -0.75;
                     } else if (newRotation > 0.75) {
                       newRotation = 0.75;
                     }
-                    rotation = newRotation;
+                    dn.rotation = newRotation;
 
                     // Map the rotation to the range -100 to 100
 
-                    int mappedRotation = (rotation * 133.33).round();
+                    int mappedRotation = (dn.rotation * 133.33).round();
 
                     // Calculate the current step
                     int currentStep = (mappedRotation / 10).round() * 10;
 
                     // If the current step is at least 10 steps away from the last sent step, send a new message
-                    if ((_lastSentStep == null) ||
-                        (currentStep - _lastSentStep!).abs() >= 10) {
-                      _lastMessage = 'steering:$currentStep';
-                      debugPrint(_lastMessage);
-                      _lastSentStep = currentStep;
-                      sendMessage(_lastMessage);
+                    if ((dn.lastSentStep == null) ||
+                        (currentStep - dn.lastSentStep!).abs() >= 10) {
+                      dn.lastMessage = 'steering:$currentStep';
+                      debugPrint(dn.lastMessage);
+                      dn.lastSentStep = currentStep;
+                      sendMessage(dn.lastMessage);
                     }
                   });
                 },
@@ -292,13 +287,13 @@ class _ConnectionpageState extends State<Connectionpage> {
               child: GestureDetector(
                 onPanUpdate: (details) {
                   setState(() {
-                    double newRotation = rotation - details.delta.dx / 100;
+                    double newRotation = dn.rotation - details.delta.dx / 100;
                     if (newRotation < -0.75) {
                       newRotation = -0.75;
                     } else if (newRotation > 0.75) {
                       newRotation = 0.75;
                     }
-                    rotation = newRotation;
+                    dn.rotation = newRotation;
                   });
                 },
               ),
@@ -308,7 +303,7 @@ class _ConnectionpageState extends State<Connectionpage> {
         IgnorePointer(
           child: Center(
             child: Transform.rotate(
-              angle: rotation,
+              angle: dn.rotation,
               child: Image.asset(
                 getSteeringWheelPicture(),
                 fit: BoxFit.contain,
@@ -393,14 +388,14 @@ class _ConnectionpageState extends State<Connectionpage> {
                         )),
                         onPressed: () {
                           sendMessage('steering:0');
-                          if (isAutoPilot) {
+                          if (dn.isAutoPilot) {
                             sendMessage('autonomous');
                           }
                           setState(() {
-                            _lastMessage = 'steering:0';
-                            _lastSentStep = null;
-                            rotation = 0;
-                            isAutoPilot = false;
+                            dn.lastMessage = 'steering:0';
+                            dn.lastSentStep = null;
+                            dn.rotation = 0;
+                            dn.isAutoPilot = false;
                           });
                         },
                         child: const Text('Reset'),
@@ -424,8 +419,6 @@ class _ConnectionpageState extends State<Connectionpage> {
     );
   }
 
-  bool isAutoPilot = false;
-
   Widget autoPilotButton(double height) {
     return SizedBox(
         height: height * 0.11,
@@ -441,13 +434,13 @@ class _ConnectionpageState extends State<Connectionpage> {
               children: [
                 const Text('Auto Pilot'),
                 Switch(
-                  value: isAutoPilot,
+                  value: dn.isAutoPilot,
                   onChanged: (value) {
                     if (dn.isConnected) {
                       sendMessage('autonomous');
                       setState(() {
-                        isAutoPilot = value;
-                        debugPrint('Auto Pilot: $isAutoPilot');
+                        dn.isAutoPilot = value;
+                        debugPrint('Auto Pilot: ${dn.isAutoPilot}');
                       });
                     }
                   },
