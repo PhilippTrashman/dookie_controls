@@ -4,6 +4,7 @@
 
 list(APPEND FLUTTER_PLUGIN_LIST
   audioplayers_windows
+  flutter_unity_widget
   permission_handler_windows
   url_launcher_windows
 )
