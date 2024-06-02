@@ -61,7 +61,7 @@ class _Dookie3DViewerState extends State<Dookie3DViewer>
             Expanded(
               flex: 7,
               child: O3D.asset(
-                src: 'assets/models/t1bulli.glb',
+                src: 'assets/models/t1itasha.glb',
                 controller: controller,
               ),
             ),
