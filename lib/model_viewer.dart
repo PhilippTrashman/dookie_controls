@@ -41,7 +41,7 @@ class _Dookie3DViewerState extends State<Dookie3DViewer>
       case 16:
         return 'assets/models/gojo.glb';
       case 29:
-        return 'assets/models/t3itasha.glb';
+        return 'assets/models/mikasa.glb';
       case 51:
         return 'assets/models/fenrys.glb';
       default:
