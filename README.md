@@ -1,6 +1,6 @@
 # dookie_controls
 
-Control Component for the ([ShitBox3000](https://github.com/ArneH666/shitbox-3000))
+Control Component for the [ShitBox3000](https://github.com/ArneH666/shitbox-3000)
 
 ## Ideas
 - Different App Designs based on Car Brand
